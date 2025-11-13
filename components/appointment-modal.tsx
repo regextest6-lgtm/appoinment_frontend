@@ -95,7 +95,11 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
   const onSubmit = async (data: AppointmentFormData) => {
     setIsSubmitting(true)
     try {
-      const appointmentDateTime = `${data.appointmentDate}T${data.appointmentTime}`
+      const doctorId = Number.parseInt(data.doctorId)
+      const departmentId = Number.parseInt(data.departmentId)
+
+      const selectedDoctor = allDoctors.find((doc) => doc.id === doctorId)
+      const selectedDepartment = departments.find((dept) => dept.id === departmentId)
 
       const res = await fetch("/api/appointments", {
         method: "POST",
@@ -104,9 +108,12 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
           patientName: data.patientName,
           patientEmail: data.patientEmail,
           patientPhone: data.patientPhone,
-          doctorId: Number.parseInt(data.doctorId),
-          departmentId: Number.parseInt(data.departmentId),
-          appointmentDate: appointmentDateTime,
+          departmentId: Number.isNaN(departmentId) ? null : departmentId,
+          department: selectedDepartment?.name ?? "General",
+          doctorId: Number.isNaN(doctorId) ? null : doctorId,
+          doctorName: selectedDoctor?.name ?? null,
+          appointmentDate: data.appointmentDate,
+          appointmentTime: data.appointmentTime,
           notes: data.notes,
         }),
       })
