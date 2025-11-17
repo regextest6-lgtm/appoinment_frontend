@@ -10,38 +10,23 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Heart, Users, Award, Clock, Star } from "lucide-react"
 import { AppointmentModal } from "@/components/appointment-modal"
+import { getDepartments, getDoctors } from "@/lib/api"
 
 interface Department {
   id: number
   name: string
   description: string
-  imageUrl: string
+  image_url?: string
 }
 
 interface Doctor {
   id: number
-  name: string
+  user: {
+    full_name: string
+  }
   specialty: string
-  imageUrl: string
-  experienceYears: number
-}
-
-interface Blog {
-  id: number
-  title: string
-  excerpt: string
-  category: string
-  image: string
-  date: string
-}
-
-interface Testimonial {
-  id: number
-  name: string
-  role: string
-  content: string
-  avatar: string
-  rating: number
+  profile_image_url?: string
+  years_of_experience?: number
 }
 
 export default function HomePage() {
@@ -52,83 +37,21 @@ export default function HomePage() {
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
   const deptScrollRef = useRef<HTMLDivElement>(null)
 
-  const blogs: Blog[] = [
-    {
-      id: 1,
-      title: "Understanding Heart Disease Prevention",
-      excerpt: "Learn key strategies to prevent heart disease and maintain a healthy cardiovascular system.",
-      category: "Cardiology",
-      image: "/heart-health-prevention.jpg",
-      date: "2025-01-28",
-    },
-    {
-      id: 2,
-      title: "Tips for Managing Chronic Pain",
-      excerpt: "Discover effective techniques and treatments for managing chronic pain conditions.",
-      category: "Pain Management",
-      image: "/pain-management-techniques.jpg",
-      date: "2025-01-25",
-    },
-    {
-      id: 3,
-      title: "Mental Health Awareness in 2025",
-      excerpt: "A comprehensive guide to mental health awareness and maintaining emotional wellness.",
-      category: "Mental Health",
-      image: "/mental-health-wellness.png",
-      date: "2025-01-22",
-    },
-    {
-      id: 4,
-      title: "Nutrition for Better Health",
-      excerpt: "Explore balanced diet plans and nutritional guidance for optimal health outcomes.",
-      category: "Nutrition",
-      image: "/healthy-nutrition-diet.jpg",
-      date: "2025-01-20",
-    },
-  ]
-
-  const testimonials: Testimonial[] = [
-    {
-      id: 1,
-      name: "John Smith",
-      role: "Patient",
-      content:
-        "The care I received at HealthCare Hospital was exceptional. The doctors were professional and attentive to my needs.",
-      avatar: "/patient-testimonial.jpg",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Sarah Williams",
-      role: "Patient",
-      content:
-        "Outstanding medical facility with the latest equipment. I felt confident in the expertise of the healthcare team.",
-      avatar: "/happy-patient.jpg",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      role: "Patient",
-      content:
-        "The entire staff was welcoming and supportive throughout my treatment. Highly recommended for anyone seeking quality healthcare.",
-      avatar: "/satisfied-patient.jpg",
-      rating: 5,
-    },
-  ]
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [deptRes, doctorRes] = await Promise.all([fetch("/api/departments"), fetch("/api/doctors")])
+        const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        const deptData = await deptRes.json()
-        const doctorData = await doctorRes.json()
-
-        setDepartments(deptData)
-        setTopDoctors(doctorData.slice(0, 3))
+        setDepartments(deptData || [])
+        // Filter out doctors with invalid data structure
+        const validDoctors = (doctorData || []).filter(
+          (doc) => doc && doc.user && doc.user.full_name
+        )
+        setTopDoctors(validDoctors.slice(0, 3))
       } catch (error) {
         console.error("Error fetching data:", error)
+        setDepartments([])
+        setTopDoctors([])
       } finally {
         setLoading(false)
       }
@@ -172,6 +95,71 @@ export default function HomePage() {
       transition: { duration: 0.5 },
     },
   }
+
+  const blogs = [
+    {
+      id: 1,
+      title: "Understanding Heart Disease Prevention",
+      excerpt: "Learn key strategies to prevent heart disease and maintain a healthy cardiovascular system.",
+      category: "Cardiology",
+      image: "/heart-health-prevention.jpg",
+      date: "2025-01-28",
+    },
+    {
+      id: 2,
+      title: "Tips for Managing Chronic Pain",
+      excerpt: "Discover effective techniques and treatments for managing chronic pain conditions.",
+      category: "Pain Management",
+      image: "/pain-management-techniques.jpg",
+      date: "2025-01-25",
+    },
+    {
+      id: 3,
+      title: "Mental Health Awareness in 2025",
+      excerpt: "A comprehensive guide to mental health awareness and maintaining emotional wellness.",
+      category: "Mental Health",
+      image: "/mental-health-wellness.png",
+      date: "2025-01-22",
+    },
+    {
+      id: 4,
+      title: "Nutrition for Better Health",
+      excerpt: "Explore balanced diet plans and nutritional guidance for optimal health outcomes.",
+      category: "Nutrition",
+      image: "/healthy-nutrition-diet.jpg",
+      date: "2025-01-20",
+    },
+  ]
+
+  const testimonials = [
+    {
+      id: 1,
+      name: "John Smith",
+      role: "Patient",
+      content:
+        "The care I received at HealthCare Hospital was exceptional. The doctors were professional and attentive to my needs.",
+      avatar: "/patient-testimonial.jpg",
+      rating: 5,
+    },
+    {
+      id: 2,
+      name: "Sarah Williams",
+      role: "Patient",
+      content:
+        "Outstanding medical facility with the latest equipment. I felt confident in the expertise of the healthcare team.",
+      avatar: "/happy-patient.jpg",
+      rating: 5,
+    },
+    {
+      id: 3,
+      name: "Michael Johnson",
+      role: "Patient",
+      content:
+        "The entire staff was welcoming and supportive throughout my treatment. Highly recommended for anyone seeking quality healthcare.",
+      avatar: "/satisfied-patient.jpg",
+      rating: 5,
+    },
+  ]
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -259,7 +247,7 @@ export default function HomePage() {
                 <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <div className="relative h-48 overflow-hidden bg-muted">
                     <Image
-                      src={dept.imageUrl || "/placeholder.svg"}
+                      src={dept.image_url || "/placeholder.svg"}
                       alt={dept.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -315,17 +303,17 @@ export default function HomePage() {
                   <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                     <div className="relative h-64 overflow-hidden bg-muted">
                       <Image
-                        src={doctor.imageUrl || "/placeholder.svg"}
-                        alt={doctor.name}
+                        src={doctor.profile_image_url || "/placeholder.svg"}
+                        alt={doctor.user.full_name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="font-bold text-lg text-foreground mb-1">{doctor.name}</h3>
+                      <h3 className="font-bold text-lg text-foreground mb-1">{doctor.user.full_name}</h3>
                       <p className="text-sm text-primary font-medium mb-3">{doctor.specialty}</p>
                       <p className="text-xs text-muted-foreground mb-4">
-                        {doctor.experienceYears}+ years of experience
+                        {doctor.years_of_experience || 0}+ years of experience
                       </p>
                       <Button
                         size="sm"

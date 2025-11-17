@@ -1,16 +1,21 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { X, Calendar, Clock, Mail, FileText } from "lucide-react"
+import { getDepartments, getDoctors, createAppointment } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 
 interface Doctor {
   id: number
-  name: string
+  user: {
+    full_name: string
+  }
   specialty: string
-  departmentId: number
+  department_id: number
 }
 
 interface Department {
@@ -35,8 +40,9 @@ interface AppointmentModalProps {
 }
 
 export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
   const [departments, setDepartments] = useState<Department[]>([])
-  const [doctors, setDoctors] = useState<Doctor[]>([])
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState("")
@@ -65,7 +71,7 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
 
   useEffect(() => {
     if (selectedDepartmentId) {
-      const filtered = allDoctors.filter((doc) => doc.departmentId === Number.parseInt(selectedDepartmentId))
+      const filtered = allDoctors.filter((doc) => doc.department_id === Number.parseInt(selectedDepartmentId))
       setFilteredDoctors(filtered)
     } else {
       setFilteredDoctors([])
@@ -75,15 +81,18 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [deptRes, doctorRes] = await Promise.all([fetch("/api/departments"), fetch("/api/doctors")])
+        const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        const deptData = await deptRes.json()
-        const doctorData = await doctorRes.json()
-
-        setDepartments(deptData)
-        setAllDoctors(doctorData)
+        setDepartments(deptData || [])
+        // Filter out doctors with invalid data structure
+        const validDoctors = (doctorData || []).filter(
+          (doc) => doc && doc.user && doc.user.full_name
+        )
+        setAllDoctors(validDoctors)
       } catch (error) {
         console.error("Error fetching data:", error)
+        setDepartments([])
+        setAllDoctors([])
       }
     }
 
@@ -98,36 +107,20 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
       const doctorId = Number.parseInt(data.doctorId)
       const departmentId = Number.parseInt(data.departmentId)
 
-      const selectedDoctor = allDoctors.find((doc) => doc.id === doctorId)
-      const selectedDepartment = departments.find((dept) => dept.id === departmentId)
-
-      const res = await fetch("/api/appointments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          patientName: data.patientName,
-          patientEmail: data.patientEmail,
-          patientPhone: data.patientPhone,
-          departmentId: Number.isNaN(departmentId) ? null : departmentId,
-          department: selectedDepartment?.name ?? "General",
-          doctorId: Number.isNaN(doctorId) ? null : doctorId,
-          doctorName: selectedDoctor?.name ?? null,
-          appointmentDate: data.appointmentDate,
-          appointmentTime: data.appointmentTime,
-          notes: data.notes,
-        }),
+      await createAppointment({
+        department_id: departmentId,
+        doctor_id: doctorId || undefined,
+        appointment_date: data.appointmentDate,
+        appointment_time: data.appointmentTime,
+        notes: data.notes,
       })
 
-      if (res.ok) {
-        setSubmitMessage("Appointment booked successfully! You will receive a confirmation call shortly.")
-        reset()
-        setTimeout(() => {
-          setSubmitMessage("")
-          onClose()
-        }, 2000)
-      } else {
-        setSubmitMessage("Error booking appointment. Please try again.")
-      }
+      setSubmitMessage("Appointment booked successfully! You will receive a confirmation call shortly.")
+      reset()
+      setTimeout(() => {
+        setSubmitMessage("")
+        onClose()
+      }, 2000)
     } catch (error) {
       setSubmitMessage("Error booking appointment. Please try again.")
     } finally {
@@ -136,6 +129,74 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
   }
 
   if (!isOpen) return null
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200">
+        <div onClick={onClose} className="absolute inset-0 bg-black/50 transition-opacity duration-200" />
+        <div className="relative bg-background rounded-lg shadow-2xl max-w-md w-full mx-4 p-8 animate-in fade-in zoom-in-95 duration-200">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 hover:bg-muted rounded-lg transition-colors z-10"
+          >
+            <X size={20} />
+          </button>
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Show login prompt if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200">
+        <div onClick={onClose} className="absolute inset-0 bg-black/50 transition-opacity duration-200" />
+        <div className="relative bg-background rounded-lg shadow-2xl max-w-md w-full mx-4 p-8 animate-in fade-in zoom-in-95 duration-200">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 hover:bg-muted rounded-lg transition-colors z-10"
+          >
+            <X size={20} />
+          </button>
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4 mx-auto">
+              <Calendar size={24} className="text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-foreground mb-3">Login Required</h2>
+            <p className="text-muted-foreground mb-6">
+              You need to be logged in to book an appointment. Please log in or create an account to continue.
+            </p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => {
+                  onClose()
+                  router.push("/auth/login")
+                }}
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              >
+                Go to Login
+              </Button>
+              <Button
+                onClick={() => {
+                  onClose()
+                  router.push("/auth/register")
+                }}
+                variant="outline"
+                className="w-full"
+              >
+                Create Account
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center animate-in fade-in duration-200">
@@ -239,7 +300,7 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
                 <option value="">{selectedDepartmentId ? "Select a doctor..." : "Select department first"}</option>
                 {filteredDoctors.map((doc) => (
                   <option key={doc.id} value={doc.id}>
-                    {doc.name}
+                    {doc.user.full_name}
                   </option>
                 ))}
               </select>

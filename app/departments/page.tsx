@@ -8,12 +8,13 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { getDepartments } from "@/lib/api"
 
 interface Department {
   id: number
   name: string
   description: string
-  imageUrl: string
+  image_url?: string
 }
 
 export default function DepartmentsPage() {
@@ -23,8 +24,7 @@ export default function DepartmentsPage() {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const res = await fetch("/api/departments")
-        const data = await res.json()
+        const data = await getDepartments()
         setDepartments(data)
       } catch (error) {
         console.error("Error fetching departments:", error)
@@ -84,7 +84,7 @@ export default function DepartmentsPage() {
                   <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                     <div className="relative h-80 overflow-hidden bg-muted">
                       <Image
-                        src={dept.imageUrl || "/placeholder.svg"}
+                        src={dept.image_url || "/placeholder.svg"}
                         alt={dept.name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"

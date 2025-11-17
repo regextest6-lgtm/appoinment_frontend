@@ -11,16 +11,19 @@ import { Footer } from "@/components/footer"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Mail, Phone, Search } from "lucide-react"
+import { getDoctors } from "@/lib/api"
 
 interface Doctor {
   id: number
-  name: string
+  user: {
+    full_name: string
+    phone?: string
+    email?: string
+  }
   specialty: string
-  bio: string
-  imageUrl: string
-  experienceYears: number
-  phone: string
-  email: string
+  bio?: string
+  profile_image_url?: string
+  years_of_experience?: number
 }
 
 export default function DoctorsPage() {
@@ -34,18 +37,22 @@ export default function DoctorsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [doctorsRes, deptRes] = await Promise.all([fetch("/api/doctors"), fetch("/api/departments")])
+        const doctorsData = await getDoctors()
 
-        const doctorsData = await doctorsRes.json()
-        const departmentsData = await deptRes.json()
+        // Filter out doctors with invalid data structure
+        const validDoctors = (doctorsData || []).filter(
+          (d) => d && d.user && d.user.full_name
+        )
 
-        setDoctors(doctorsData)
+        setDoctors(validDoctors)
 
-        // Extract unique specialties from doctors
-        const uniqueSpecialties = [...new Set(doctorsData.map((d: Doctor) => d.specialty))]
+        // Extract unique specialties from valid doctors
+        const uniqueSpecialties = [...new Set(validDoctors.map((d: Doctor) => d.specialty))]
         setDepartments(uniqueSpecialties as string[])
       } catch (error) {
         console.error("Error fetching data:", error)
+        setDoctors([])
+        setDepartments([])
       } finally {
         setLoading(false)
       }
@@ -64,7 +71,7 @@ export default function DoctorsPage() {
 
     // Filter by doctor name if provided
     if (doctorName.trim()) {
-      results = results.filter((d) => d.name.toLowerCase().includes(doctorName.toLowerCase()))
+      results = results.filter((d) => d.user.full_name.toLowerCase().includes(doctorName.toLowerCase()))
     }
 
     setFilteredDoctors(results)
@@ -184,24 +191,24 @@ export default function DoctorsPage() {
                   <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                     <div className="relative h-72 overflow-hidden bg-muted">
                       <Image
-                        src={doctor.imageUrl || "/placeholder.svg"}
-                        alt={doctor.name}
+                        src={doctor.profile_image_url || "/placeholder.svg"}
+                        alt={doctor.user.full_name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="font-bold text-xl text-foreground mb-1">{doctor.name}</h3>
+                      <h3 className="font-bold text-xl text-foreground mb-1">{doctor.user.full_name}</h3>
                       <p className="text-primary font-medium mb-3">{doctor.specialty}</p>
-                      <p className="text-sm text-muted-foreground mb-4">{doctor.bio}</p>
+                      <p className="text-sm text-muted-foreground mb-4">{doctor.bio || "Experienced healthcare professional"}</p>
                       <div className="space-y-2 mb-4 pb-4 border-b border-border">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Phone size={16} />
-                          <span>{doctor.phone}</span>
+                          <span>{doctor.user.phone || "N/A"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail size={16} />
-                          <span className="truncate">{doctor.email}</span>
+                          <span className="truncate">{doctor.user.email || "N/A"}</span>
                         </div>
                       </div>
                       <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
