@@ -21,6 +21,8 @@ import {
   ChevronDown,
   Plus,
   Eye,
+  Ambulance,
+  Glasses,
 } from "lucide-react"
 
 interface AdminCRMSidebarProps {
@@ -93,6 +95,22 @@ export function AdminCRMSidebar({ currentMenu, onMenuChange, onActionChange }: A
       icon: BarChart3,
       submenu: [
         { label: "View Analytics", action: "view" },
+      ],
+    },
+    {
+      id: "ambulance",
+      label: "Ambulance Services",
+      icon: Ambulance,
+      submenu: [
+        { label: "Manage Services", action: "view" },
+      ],
+    },
+    {
+      id: "eye-products",
+      label: "Eye Products",
+      icon: Glasses,
+      submenu: [
+        { label: "Manage Products", action: "view" },
       ],
     },
     {

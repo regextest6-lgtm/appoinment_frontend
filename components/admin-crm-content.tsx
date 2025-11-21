@@ -8,6 +8,9 @@ import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
 import { Search, Plus, Edit, Trash2, Eye, X, Save, Calendar, Users, Building2, Briefcase, MessageSquare, BarChart3, CheckCircle, AlertCircle } from "lucide-react"
 import useSWR from "swr"
+import { AmbulanceManagement } from "./ambulance-management"
+import { EyeProductsManagement } from "./eye-products-management"
+import { useAuth } from "@/lib/auth-context"
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -381,6 +384,18 @@ export function AdminCRMContent({ menu, action }: AdminCRMContentProps) {
         )}
       </div>
     )
+  }
+
+  // Ambulance Services Management
+  if (menu === "ambulance") {
+    const token = typeof window !== 'undefined' ? localStorage.getItem("auth_token") || "" : ""
+    return <AmbulanceManagement token={token} />
+  }
+
+  // Eye Products Management
+  if (menu === "eye-products") {
+    const token = typeof window !== 'undefined' ? localStorage.getItem("auth_token") || "" : ""
+    return <EyeProductsManagement token={token} />
   }
 
   // Other menus - Coming Soon

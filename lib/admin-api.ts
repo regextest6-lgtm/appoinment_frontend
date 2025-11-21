@@ -79,6 +79,32 @@ export interface Service {
   is_active?: boolean
 }
 
+export interface AmbulanceService {
+  id: number
+  name: string
+  description?: string
+  phone: string
+  location?: string
+  latitude?: string
+  longitude?: string
+  available_24_7: boolean
+  ambulance_count: number
+  is_active?: boolean
+}
+
+export interface EyeProduct {
+  id: number
+  name: string
+  description?: string
+  category: string
+  brand?: string
+  price?: string
+  image_url?: string
+  stock_quantity: number
+  is_available: boolean
+  is_active?: boolean
+}
+
 export interface Appointment {
   id: number
   patient_name?: string
@@ -460,6 +486,154 @@ export async function updateMessageStatus(
  */
 export async function deleteMessage(token: string, messageId: number): Promise<void> {
   await apiCall<void>(`/contacts/${messageId}`, token, {
+    method: "DELETE",
+  })
+}
+
+// ============================================================================
+// AMBULANCE SERVICES MANAGEMENT
+// ============================================================================
+
+/**
+ * Get all ambulance services
+ */
+export async function getAmbulanceServicesList(
+  token: string,
+  skip: number = 0,
+  limit: number = 10,
+  available24_7: boolean = false
+): Promise<AmbulanceService[]> {
+  let url = `/ambulance-services?skip=${skip}&limit=${limit}`
+  if (available24_7) {
+    url += `&available_24_7=true`
+  }
+  return apiCall<AmbulanceService[]>(url, token)
+}
+
+/**
+ * Get ambulance service by ID
+ */
+export async function getAmbulanceServiceById(token: string, serviceId: number): Promise<AmbulanceService> {
+  return apiCall<AmbulanceService>(`/ambulance-services/${serviceId}`, token)
+}
+
+/**
+ * Create new ambulance service
+ */
+export async function createAmbulanceService(
+  token: string,
+  data: {
+    name: string
+    description?: string
+    phone: string
+    location?: string
+    latitude?: string
+    longitude?: string
+    available_24_7?: boolean
+    ambulance_count?: number
+  }
+): Promise<AmbulanceService> {
+  return apiCall<AmbulanceService>("/ambulance-services", token, {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Update ambulance service
+ */
+export async function updateAmbulanceService(
+  token: string,
+  serviceId: number,
+  data: Partial<AmbulanceService>
+): Promise<AmbulanceService> {
+  return apiCall<AmbulanceService>(`/ambulance-services/${serviceId}`, token, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Delete ambulance service
+ */
+export async function deleteAmbulanceService(token: string, serviceId: number): Promise<void> {
+  await apiCall<void>(`/ambulance-services/${serviceId}`, token, {
+    method: "DELETE",
+  })
+}
+
+// ============================================================================
+// EYE PRODUCTS MANAGEMENT
+// ============================================================================
+
+/**
+ * Get all eye products
+ */
+export async function getEyeProductsList(
+  token: string,
+  skip: number = 0,
+  limit: number = 10,
+  category?: string,
+  brand?: string
+): Promise<EyeProduct[]> {
+  let url = `/eye-products?skip=${skip}&limit=${limit}`
+  if (category) {
+    url += `&category=${category}`
+  }
+  if (brand) {
+    url += `&brand=${brand}`
+  }
+  return apiCall<EyeProduct[]>(url, token)
+}
+
+/**
+ * Get eye product by ID
+ */
+export async function getEyeProductById(token: string, productId: number): Promise<EyeProduct> {
+  return apiCall<EyeProduct>(`/eye-products/${productId}`, token)
+}
+
+/**
+ * Create new eye product
+ */
+export async function createEyeProduct(
+  token: string,
+  data: {
+    name: string
+    description?: string
+    category: string
+    brand?: string
+    price?: string
+    image_url?: string
+    stock_quantity?: number
+    is_available?: boolean
+  }
+): Promise<EyeProduct> {
+  return apiCall<EyeProduct>("/eye-products", token, {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Update eye product
+ */
+export async function updateEyeProduct(
+  token: string,
+  productId: number,
+  data: Partial<EyeProduct>
+): Promise<EyeProduct> {
+  return apiCall<EyeProduct>(`/eye-products/${productId}`, token, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Delete eye product
+ */
+export async function deleteEyeProduct(token: string, productId: number): Promise<void> {
+  await apiCall<void>(`/eye-products/${productId}`, token, {
     method: "DELETE",
   })
 }

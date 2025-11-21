@@ -18,6 +18,8 @@ export function Navbar() {
     { href: "/doctors", label: "Doctors List" },
     { href: "/departments", label: "Departments" },
     { href: "/services", label: "Services" },
+    { href: "/ambulance-services", label: "Ambulance" },
+    { href: "/eye-products", label: "Eye Products" },
     { href: "/contact", label: "Contact" },
   ]
 

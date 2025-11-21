@@ -132,11 +132,28 @@ export async function registerPatient(data: {
   password: string
   full_name?: string
   email?: string
+  nid?: string
+  date_of_birth?: string
+  gender?: string
+  blood_group?: string
+  division?: string
+  district?: string
+  upazila?: string
+  village?: string
+  address?: string
+  emergency_contact_name?: string
+  emergency_contact_phone?: string
 }) {
   try {
+    // Truncate password to 72 bytes (bcrypt limit)
+    const truncatedPassword = data.password.substring(0, 72)
+    
     return await apiCall("/auth/register", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        password: truncatedPassword,
+      }),
     })
   } catch (error) {
     throw new Error("Registration failed. Please ensure the backend server is running.")
@@ -148,9 +165,15 @@ export async function loginPatient(data: {
   password: string
 }) {
   try {
+    // Truncate password to 72 bytes (bcrypt limit)
+    const truncatedPassword = data.password.substring(0, 72)
+    
     return await apiCall("/auth/login", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        password: truncatedPassword,
+      }),
     })
   } catch (error) {
     throw new Error("Login failed. Please ensure the backend server is running.")
@@ -162,9 +185,15 @@ export async function loginDoctor(data: {
   password: string
 }) {
   try {
+    // Truncate password to 72 bytes (bcrypt limit)
+    const truncatedPassword = data.password.substring(0, 72)
+    
     return await apiCall("/auth/login", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        password: truncatedPassword,
+      }),
     })
   } catch (error) {
     throw new Error("Login failed. Please ensure the backend server is running.")
@@ -176,9 +205,15 @@ export async function loginAdmin(data: {
   password: string
 }) {
   try {
+    // Truncate password to 72 bytes (bcrypt limit)
+    const truncatedPassword = data.password.substring(0, 72)
+    
     return await apiCall("/auth/login", {
       method: "POST",
-      body: JSON.stringify(data),
+      body: JSON.stringify({
+        ...data,
+        password: truncatedPassword,
+      }),
     })
   } catch (error) {
     throw new Error("Login failed. Please ensure the backend server is running.")
@@ -217,4 +252,35 @@ export async function logout() {
     // Logout can fail silently
     return { success: true }
   }
+}
+
+// Ambulance Services
+export async function getAmbulanceServices(available24_7: boolean = false) {
+  return apiCall(`/ambulance-services?available_24_7=${available24_7}`)
+}
+
+export async function getAmbulanceServiceById(id: number) {
+  return apiCall(`/ambulance-services/${id}`)
+}
+
+// Eye Products
+export async function getEyeProducts(category?: string, brand?: string) {
+  let url = "/eye-products"
+  const params = new URLSearchParams()
+  if (category) params.append("category", category)
+  if (brand) params.append("brand", brand)
+  if (params.toString()) url += `?${params.toString()}`
+  return apiCall(url)
+}
+
+export async function getEyeProductById(id: number) {
+  return apiCall(`/eye-products/${id}`)
+}
+
+export async function getEyeProductsByCategory(category: string) {
+  return apiCall(`/eye-products?category=${category}`)
+}
+
+export async function getEyeProductsByBrand(brand: string) {
+  return apiCall(`/eye-products?brand=${brand}`)
 }
