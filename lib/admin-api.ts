@@ -149,7 +149,7 @@ async function apiCall<T>(
         Authorization: `Bearer ${token}`,
         ...options?.headers,
       },
-      signal: AbortSignal.timeout(10000), // 10 second timeout
+      signal: AbortSignal.timeout(20000), // 20-second timeout for Render cold-start
     })
 
     if (!response.ok) {

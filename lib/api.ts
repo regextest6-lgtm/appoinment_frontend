@@ -23,7 +23,7 @@ export async function apiCall<T>(
         ...(token && { Authorization: `Bearer ${token}` }),
         ...options?.headers,
       },
-      signal: AbortSignal.timeout(5000), // 5 second timeout
+      signal: AbortSignal.timeout(20000), // 20-second timeout – allows Render backend cold-start
     })
 
     if (!response.ok) {
