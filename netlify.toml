@@ -12,7 +12,7 @@
 
 # Environment variables
 [build.environment]
-  NODE_VERSION = "18.17.0"
+  NODE_VERSION = "20.9.0"
   NPM_VERSION = "9.8.1"
   NEXT_PUBLIC_API_URL = "https://appointment-backend.onrender.com"
   NEXT_PUBLIC_API_BASE_URL = "https://appointment-backend.onrender.com/api/v1"
