@@ -1,4 +1,28 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"
+// Ensure API_URL always has the /api/v1 prefix
+const getApiUrl = () => {
+  // Production: Use Render backend
+  // Development: Use localhost
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
+    (typeof window !== "undefined" && window.location.hostname === "localhost" 
+      ? "http://localhost:8000/api/v1"
+      : "https://appoinment-backend-gy1s.onrender.com/api/v1")
+  
+  // If the URL doesn't end with /api/v1, append it
+  if (!baseUrl.includes("/api/v1")) {
+    return `${baseUrl}/api/v1`.replace(/\/+/g, "/").replace(":/", "://")
+  }
+  
+  return baseUrl
+}
+
+const API_URL = getApiUrl()
+
+// Log API URL for debugging
+if (typeof window !== "undefined") {
+  console.log("API_URL configured as:", API_URL)
+  console.log("NEXT_PUBLIC_API_URL env:", process.env.NEXT_PUBLIC_API_URL)
+  console.log("Hostname:", window.location.hostname)
+}
 
 export interface ApiResponse<T> {
   data?: T
