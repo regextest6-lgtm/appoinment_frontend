@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Phone, Mail, MapPin } from "lucide-react"
+import { createContactMessage } from "@/lib/api"
 
 interface ContactFormData {
   name: string
@@ -31,17 +32,10 @@ export default function ContactPage() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true)
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      })
-
-      if (res.ok) {
-        setSubmitMessage("Message sent successfully! We will get back to you soon.")
-        reset()
-        setTimeout(() => setSubmitMessage(""), 5000)
-      }
+      await createContactMessage(data)
+      setSubmitMessage("Message sent successfully! We will get back to you soon.")
+      reset()
+      setTimeout(() => setSubmitMessage(""), 5000)
     } catch (error) {
       setSubmitMessage("Error sending message. Please try again.")
     } finally {

@@ -21,6 +21,8 @@ interface Doctor {
   phone: string
   email: string
   departmentId: number
+  qualifications?: string[]
+  availability?: string
 }
 
 interface DepartmentWiseDoctor {
@@ -42,9 +44,8 @@ export default function DoctorDetailPage() {
     const fetchData = async () => {
       try {
         // Fetch selected doctor details
-        const doctorRes = await fetch(`/api/doctors?id=${doctorId}`)
-        const allDoctors = await doctorRes.json()
-        const selectedDoctor = allDoctors.find((d: Doctor) => d.id === Number.parseInt(String(doctorId)))
+        const doctorRes = await fetch(`/api/doctors/${doctorId}`)
+        const selectedDoctor = await doctorRes.json()
 
         if (selectedDoctor) {
           setDoctor(selectedDoctor)

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { motion } from "framer-motion"
 import { Navbar } from "@/components/navbar"
@@ -9,12 +9,16 @@ import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Calendar, Clock, Mail, FileText } from "lucide-react"
+import { getDepartments, getDoctors, createAppointment } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 
 interface Doctor {
   id: number
-  name: string
+  user: {
+    full_name: string
+  }
   specialty: string
-  departmentId: number
+  department_id: number
 }
 
 interface Department {
@@ -34,6 +38,8 @@ interface AppointmentFormData {
 }
 
 export default function AppointmentPage() {
+  const router = useRouter()
+  const { isAuthenticated, isLoading } = useAuth()
   const searchParams = useSearchParams()
   const doctorIdParam = searchParams.get("doctorId")
   const [departments, setDepartments] = useState<Department[]>([])
@@ -41,6 +47,13 @@ export default function AppointmentPage() {
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState("")
+
+  // Check authentication on mount
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push("/auth/login")
+    }
+  }, [isAuthenticated, isLoading, router])
 
   const {
     register,
@@ -65,7 +78,7 @@ export default function AppointmentPage() {
 
   useEffect(() => {
     if (selectedDepartmentId) {
-      const filtered = allDoctors.filter((doc) => doc.departmentId === Number.parseInt(selectedDepartmentId))
+      const filtered = allDoctors.filter((doc) => doc.department_id === Number.parseInt(selectedDepartmentId))
       setFilteredDoctors(filtered)
     } else {
       setFilteredDoctors([])
@@ -75,15 +88,18 @@ export default function AppointmentPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [deptRes, doctorRes] = await Promise.all([fetch("/api/departments"), fetch("/api/doctors")])
+        const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        const deptData = await deptRes.json()
-        const doctorData = await doctorRes.json()
-
-        setDepartments(deptData)
-        setAllDoctors(doctorData)
+        setDepartments(deptData || [])
+        // Filter out doctors with invalid data structure
+        const validDoctors = (doctorData || []).filter(
+          (d) => d && d.user && d.user.full_name
+        )
+        setAllDoctors(validDoctors)
       } catch (error) {
         console.error("Error fetching data:", error)
+        setDepartments([])
+        setAllDoctors([])
       }
     }
 
@@ -96,38 +112,43 @@ export default function AppointmentPage() {
       const doctorId = Number.parseInt(data.doctorId)
       const departmentId = Number.parseInt(data.departmentId)
 
-      const selectedDoctor = allDoctors.find((doc) => doc.id === doctorId)
-      const selectedDepartment = departments.find((dept) => dept.id === departmentId)
-
-      const res = await fetch("/api/appointments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          patientName: data.patientName,
-          patientEmail: data.patientEmail,
-          patientPhone: data.patientPhone,
-          departmentId: Number.isNaN(departmentId) ? null : departmentId,
-          department: selectedDepartment?.name ?? "General",
-          doctorId: Number.isNaN(doctorId) ? null : doctorId,
-          doctorName: selectedDoctor?.name ?? null,
-          appointmentDate: data.appointmentDate,
-          appointmentTime: data.appointmentTime,
-          notes: data.notes,
-        }),
+      await createAppointment({
+        department_id: departmentId,
+        doctor_id: doctorId || undefined,
+        appointment_date: data.appointmentDate,
+        appointment_time: data.appointmentTime,
+        notes: data.notes,
       })
 
-      if (res.ok) {
-        setSubmitMessage("Appointment booked successfully! You will receive a confirmation call shortly.")
-        reset()
-        setTimeout(() => setSubmitMessage(""), 5000)
-      } else {
-        setSubmitMessage("Error booking appointment. Please try again.")
-      }
+      setSubmitMessage("Appointment booked successfully! You will receive a confirmation call shortly.")
+      reset()
+      setTimeout(() => setSubmitMessage(""), 5000)
     } catch (error) {
       setSubmitMessage("Error booking appointment. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Show loading state while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <section className="w-full py-20 px-4 flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </section>
+        <Footer />
+      </div>
+    )
+  }
+
+  // Redirect happens in useEffect, but show nothing while redirecting
+  if (!isAuthenticated) {
+    return null
   }
 
   return (
@@ -261,7 +282,7 @@ export default function AppointmentPage() {
                       </option>
                       {filteredDoctors.map((doc) => (
                         <option key={doc.id} value={doc.id}>
-                          {doc.name}
+                          {doc.user.full_name}
                         </option>
                       ))}
                     </select>

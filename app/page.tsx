@@ -10,125 +10,53 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Heart, Users, Award, Clock, Star } from "lucide-react"
 import { AppointmentModal } from "@/components/appointment-modal"
+import { getDepartments, getDoctors, getBloodBanks, getAmbulanceServices, getEyeProducts } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 
 interface Department {
   id: number
   name: string
   description: string
-  imageUrl: string
+  image_url?: string
 }
 
 interface Doctor {
   id: number
-  name: string
+  user: {
+    full_name: string
+  }
   specialty: string
-  imageUrl: string
-  experienceYears: number
-}
-
-interface Blog {
-  id: number
-  title: string
-  excerpt: string
-  category: string
-  image: string
-  date: string
-}
-
-interface Testimonial {
-  id: number
-  name: string
-  role: string
-  content: string
-  avatar: string
-  rating: number
+  profile_image_url?: string
+  years_of_experience?: number
 }
 
 export default function HomePage() {
+  const { user, userType, isLoading: authLoading } = useAuth()
   const [departments, setDepartments] = useState<Department[]>([])
   const [topDoctors, setTopDoctors] = useState<Doctor[]>([])
+  const [bloodBanks, setBloodBanks] = useState<any[]>([])
+  const [ambulanceServices, setAmbulanceServices] = useState<any[]>([])
+  const [eyeProducts, setEyeProducts] = useState<any[]>([])
   const [showAppointmentModal, setShowAppointmentModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
   const deptScrollRef = useRef<HTMLDivElement>(null)
 
-  const blogs: Blog[] = [
-    {
-      id: 1,
-      title: "Understanding Heart Disease Prevention",
-      excerpt: "Learn key strategies to prevent heart disease and maintain a healthy cardiovascular system.",
-      category: "Cardiology",
-      image: "/heart-health-prevention.jpg",
-      date: "2025-01-28",
-    },
-    {
-      id: 2,
-      title: "Tips for Managing Chronic Pain",
-      excerpt: "Discover effective techniques and treatments for managing chronic pain conditions.",
-      category: "Pain Management",
-      image: "/pain-management-techniques.jpg",
-      date: "2025-01-25",
-    },
-    {
-      id: 3,
-      title: "Mental Health Awareness in 2025",
-      excerpt: "A comprehensive guide to mental health awareness and maintaining emotional wellness.",
-      category: "Mental Health",
-      image: "/mental-health-wellness.png",
-      date: "2025-01-22",
-    },
-    {
-      id: 4,
-      title: "Nutrition for Better Health",
-      excerpt: "Explore balanced diet plans and nutritional guidance for optimal health outcomes.",
-      category: "Nutrition",
-      image: "/healthy-nutrition-diet.jpg",
-      date: "2025-01-20",
-    },
-  ]
-
-  const testimonials: Testimonial[] = [
-    {
-      id: 1,
-      name: "John Smith",
-      role: "Patient",
-      content:
-        "The care I received at HealthCare Hospital was exceptional. The doctors were professional and attentive to my needs.",
-      avatar: "/patient-testimonial.jpg",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Sarah Williams",
-      role: "Patient",
-      content:
-        "Outstanding medical facility with the latest equipment. I felt confident in the expertise of the healthcare team.",
-      avatar: "/happy-patient.jpg",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      role: "Patient",
-      content:
-        "The entire staff was welcoming and supportive throughout my treatment. Highly recommended for anyone seeking quality healthcare.",
-      avatar: "/satisfied-patient.jpg",
-      rating: 5,
-    },
-  ]
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [deptRes, doctorRes] = await Promise.all([fetch("/api/departments"), fetch("/api/doctors")])
+        const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        const deptData = await deptRes.json()
-        const doctorData = await doctorRes.json()
-
-        setDepartments(deptData)
-        setTopDoctors(doctorData.slice(0, 3))
+        setDepartments(deptData || [])
+        // Filter out doctors with invalid data structure
+        const validDoctors = (doctorData || []).filter(
+          (doc) => doc && doc.user && doc.user.full_name
+        )
+        setTopDoctors(validDoctors.slice(0, 3))
       } catch (error) {
         console.error("Error fetching data:", error)
+        setDepartments([])
+        setTopDoctors([])
       } finally {
         setLoading(false)
       }
@@ -172,6 +100,71 @@ export default function HomePage() {
       transition: { duration: 0.5 },
     },
   }
+
+  const blogs = [
+    {
+      id: 1,
+      title: "Understanding Heart Disease Prevention",
+      excerpt: "Learn key strategies to prevent heart disease and maintain a healthy cardiovascular system.",
+      category: "Cardiology",
+      image: "/heart-health-prevention.jpg",
+      date: "2025-01-28",
+    },
+    {
+      id: 2,
+      title: "Tips for Managing Chronic Pain",
+      excerpt: "Discover effective techniques and treatments for managing chronic pain conditions.",
+      category: "Pain Management",
+      image: "/pain-management-techniques.jpg",
+      date: "2025-01-25",
+    },
+    {
+      id: 3,
+      title: "Mental Health Awareness in 2025",
+      excerpt: "A comprehensive guide to mental health awareness and maintaining emotional wellness.",
+      category: "Mental Health",
+      image: "/mental-health-wellness.png",
+      date: "2025-01-22",
+    },
+    {
+      id: 4,
+      title: "Nutrition for Better Health",
+      excerpt: "Explore balanced diet plans and nutritional guidance for optimal health outcomes.",
+      category: "Nutrition",
+      image: "/healthy-nutrition-diet.jpg",
+      date: "2025-01-20",
+    },
+  ]
+
+  const testimonials = [
+    {
+      id: 1,
+      name: "John Smith",
+      role: "Patient",
+      content:
+        "The care I received at HealthCare Hospital was exceptional. The doctors were professional and attentive to my needs.",
+      avatar: "/patient-testimonial.jpg",
+      rating: 5,
+    },
+    {
+      id: 2,
+      name: "Sarah Williams",
+      role: "Patient",
+      content:
+        "Outstanding medical facility with the latest equipment. I felt confident in the expertise of the healthcare team.",
+      avatar: "/happy-patient.jpg",
+      rating: 5,
+    },
+    {
+      id: 3,
+      name: "Michael Johnson",
+      role: "Patient",
+      content:
+        "The entire staff was welcoming and supportive throughout my treatment. Highly recommended for anyone seeking quality healthcare.",
+      avatar: "/satisfied-patient.jpg",
+      rating: 5,
+    },
+  ]
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -259,7 +252,7 @@ export default function HomePage() {
                 <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <div className="relative h-48 overflow-hidden bg-muted">
                     <Image
-                      src={dept.imageUrl || "/placeholder.svg"}
+                      src={dept.image_url || "/placeholder.svg"}
                       alt={dept.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -315,17 +308,17 @@ export default function HomePage() {
                   <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                     <div className="relative h-64 overflow-hidden bg-muted">
                       <Image
-                        src={doctor.imageUrl || "/placeholder.svg"}
-                        alt={doctor.name}
+                        src={doctor.profile_image_url || "/placeholder.svg"}
+                        alt={doctor.user.full_name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="font-bold text-lg text-foreground mb-1">{doctor.name}</h3>
+                      <h3 className="font-bold text-lg text-foreground mb-1">{doctor.user.full_name}</h3>
                       <p className="text-sm text-primary font-medium mb-3">{doctor.specialty}</p>
                       <p className="text-xs text-muted-foreground mb-4">
-                        {doctor.experienceYears}+ years of experience
+                        {doctor.years_of_experience || 0}+ years of experience
                       </p>
                       <Button
                         size="sm"
@@ -371,6 +364,87 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Patient Services Section - Only for logged-in patients */}
+      {!authLoading && user && userType === "patient" && (
+        <section className="w-full py-20 px-4 bg-gradient-to-b from-blue-50 to-transparent">
+          <div className="container mx-auto">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Quick Access Services</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Emergency services and health products available for you
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            >
+              {/* Blood Banks Card */}
+              <motion.div variants={itemVariants} whileHover={{ y: -8 }} className="group">
+                <Link href="/blood-banks">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:bg-red-50/50 cursor-pointer">
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <div className="text-3xl">🩸</div>
+                      </div>
+                      <h3 className="font-bold text-xl text-foreground mb-2">Blood Banks</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Find blood banks near you and check blood availability
+                      </p>
+                      <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
+                        Find Blood Banks
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+
+              {/* Ambulance Services Card */}
+              <motion.div variants={itemVariants} whileHover={{ y: -8 }} className="group">
+                <Link href="/ambulance-services">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:bg-orange-50/50 cursor-pointer">
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <div className="text-3xl">🚑</div>
+                      </div>
+                      <h3 className="font-bold text-xl text-foreground mb-2">Ambulance Services</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Emergency ambulance services available 24/7
+                      </p>
+                      <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                        Call Ambulance
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+
+              {/* Eye Products Card */}
+              <motion.div variants={itemVariants} whileHover={{ y: -8 }} className="group">
+                <Link href="/eye-products">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <div className="text-3xl">👓</div>
+                      </div>
+                      <h3 className="font-bold text-xl text-foreground mb-2">Eye Products</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Premium eyewear and eye care products
+                      </p>
+                      <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                        Shop Now
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       <section className="w-full py-20 px-4 bg-muted/50">
         <div className="container mx-auto">

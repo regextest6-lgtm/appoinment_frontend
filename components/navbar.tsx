@@ -2,13 +2,18 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Menu, X } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
+import { Menu, X, LogOut, User } from "lucide-react"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter()
+  const { user, userType, logout, isLoading } = useAuth()
 
-  const navLinks = [
+  // Public links - always visible
+  const publicNavLinks = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
     { href: "/doctors", label: "Doctors List" },
@@ -16,6 +21,35 @@ export function Navbar() {
     { href: "/services", label: "Services" },
     { href: "/contact", label: "Contact" },
   ]
+
+  // Protected links - only visible when logged in
+  const protectedNavLinks = [
+    { href: "/ambulance-services", label: "Ambulance" },
+    { href: "/eye-products", label: "Eye Products" },
+    { href: "/blood-banks", label: "Blood Banks" },
+  ]
+
+  // Combine links based on login status
+  const navLinks = !isLoading && user ? [...publicNavLinks, ...protectedNavLinks] : publicNavLinks
+
+  const handleLogout = () => {
+    logout()
+    router.push("/")
+    setIsOpen(false)
+  }
+
+  const getDashboardLink = () => {
+    switch (userType) {
+      case "patient":
+        return "/dashboard/patient"
+      case "doctor":
+        return "/dashboard/doctor"
+      case "admin":
+        return "/dashboard/admin"
+      default:
+        return "/"
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -25,7 +59,7 @@ export function Navbar() {
           <div className="text-xl font-bold text-primary">HealthCare</div>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - Always visible */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <div key={link.href}>
@@ -39,14 +73,45 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Desktop Appointment Button */}
-        <div className="hidden md:block">
-          <Button
-            asChild
-            className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105"
-          >
-            <Link href="/appointment">Book Appointment</Link>
-          </Button>
+        {/* Desktop Auth Buttons */}
+        <div className="hidden md:flex items-center gap-3">
+          {!isLoading && user ? (
+            <>
+              <Button
+                asChild
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Link href={getDashboardLink()}>
+                  <User size={18} />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <LogOut size={18} />
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                asChild
+                className="bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-200 hover:scale-105"
+              >
+                <Link href="/auth/login">Login</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+              >
+                <Link href="/auth/register">Register</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -72,9 +137,45 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="/appointment">Book Appointment</Link>
-            </Button>
+            
+            {!isLoading && user ? (
+              <>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full flex items-center gap-2"
+                >
+                  <Link href={getDashboardLink()}>
+                    <User size={18} />
+                    Dashboard
+                  </Link>
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  className="w-full flex items-center gap-2"
+                >
+                  <LogOut size={18} />
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Link href="/auth/login">Login</Link>
+                </Button>
+                <Button
+                  asChild
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Link href="/auth/register">Register</Link>
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}
