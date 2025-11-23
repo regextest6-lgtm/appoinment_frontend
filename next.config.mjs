@@ -74,12 +74,13 @@ const nextConfig = {
   
   // Rewrites for API proxy (optional)
   async rewrites() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://appoinment-backend-gy1s.onrender.com/api/v1';
     return {
       beforeFiles: [
         // API proxy to backend
         {
           source: '/api/:path*',
-          destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+          destination: `${apiUrl}/:path*`,
         },
       ],
     }
