@@ -308,3 +308,21 @@ export async function getEyeProductsByCategory(category: string) {
 export async function getEyeProductsByBrand(brand: string) {
   return apiCall(`/eye-products?brand=${brand}`)
 }
+
+// Blood Banks
+export async function getBloodBanks(available24_7: boolean = false, bloodGroup?: string) {
+  let url = "/blood-banks"
+  const params = new URLSearchParams()
+  if (available24_7) params.append("available_24_7", "true")
+  if (bloodGroup) params.append("blood_group", bloodGroup)
+  if (params.toString()) url += `?${params.toString()}`
+  return apiCall(url)
+}
+
+export async function getBloodBankById(id: number) {
+  return apiCall(`/blood-banks/${id}`)
+}
+
+export async function getBloodBanksByBloodGroup(bloodGroup: string) {
+  return apiCall(`/blood-banks?blood_group=${bloodGroup}`)
+}

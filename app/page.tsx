@@ -10,7 +10,8 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Heart, Users, Award, Clock, Star } from "lucide-react"
 import { AppointmentModal } from "@/components/appointment-modal"
-import { getDepartments, getDoctors } from "@/lib/api"
+import { getDepartments, getDoctors, getBloodBanks, getAmbulanceServices, getEyeProducts } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 
 interface Department {
   id: number
@@ -30,8 +31,12 @@ interface Doctor {
 }
 
 export default function HomePage() {
+  const { user, userType, isLoading: authLoading } = useAuth()
   const [departments, setDepartments] = useState<Department[]>([])
   const [topDoctors, setTopDoctors] = useState<Doctor[]>([])
+  const [bloodBanks, setBloodBanks] = useState<any[]>([])
+  const [ambulanceServices, setAmbulanceServices] = useState<any[]>([])
+  const [eyeProducts, setEyeProducts] = useState<any[]>([])
   const [showAppointmentModal, setShowAppointmentModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [isAutoScrolling, setIsAutoScrolling] = useState(true)
@@ -359,6 +364,87 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Patient Services Section - Only for logged-in patients */}
+      {!authLoading && user && userType === "patient" && (
+        <section className="w-full py-20 px-4 bg-gradient-to-b from-blue-50 to-transparent">
+          <div className="container mx-auto">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Quick Access Services</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Emergency services and health products available for you
+              </p>
+            </motion.div>
+
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            >
+              {/* Blood Banks Card */}
+              <motion.div variants={itemVariants} whileHover={{ y: -8 }} className="group">
+                <Link href="/blood-banks">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:bg-red-50/50 cursor-pointer">
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <div className="text-3xl">🩸</div>
+                      </div>
+                      <h3 className="font-bold text-xl text-foreground mb-2">Blood Banks</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Find blood banks near you and check blood availability
+                      </p>
+                      <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
+                        Find Blood Banks
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+
+              {/* Ambulance Services Card */}
+              <motion.div variants={itemVariants} whileHover={{ y: -8 }} className="group">
+                <Link href="/ambulance-services">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:bg-orange-50/50 cursor-pointer">
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <div className="text-3xl">🚑</div>
+                      </div>
+                      <h3 className="font-bold text-xl text-foreground mb-2">Ambulance Services</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Emergency ambulance services available 24/7
+                      </p>
+                      <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white">
+                        Call Ambulance
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+
+              {/* Eye Products Card */}
+              <motion.div variants={itemVariants} whileHover={{ y: -8 }} className="group">
+                <Link href="/eye-products">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:bg-blue-50/50 cursor-pointer">
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                        <div className="text-3xl">👓</div>
+                      </div>
+                      <h3 className="font-bold text-xl text-foreground mb-2">Eye Products</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Premium eyewear and eye care products
+                      </p>
+                      <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                        Shop Now
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       <section className="w-full py-20 px-4 bg-muted/50">
         <div className="container mx-auto">
