@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card } from "@/components/ui/card"
 import { getAmbulanceServices } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 import { Phone, MapPin, Clock } from "lucide-react"
 
 interface AmbulanceService {
@@ -19,8 +21,17 @@ interface AmbulanceService {
 }
 
 export default function AmbulanceServicesPage() {
+  const router = useRouter()
+  const { user, isLoading: authLoading } = useAuth()
   const [services, setServices] = useState<AmbulanceService[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/auth/login")
+    }
+  }, [user, authLoading, router])
 
   useEffect(() => {
     const fetchServices = async () => {

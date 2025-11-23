@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card } from "@/components/ui/card"
 import { getEyeProducts } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 import { ShoppingCart, Tag } from "lucide-react"
 
 interface EyeProduct {
@@ -21,11 +23,20 @@ interface EyeProduct {
 }
 
 export default function EyeProductsPage() {
+  const router = useRouter()
+  const { user, isLoading: authLoading } = useAuth()
   const [products, setProducts] = useState<EyeProduct[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   const categories = ["Sunglasses", "Contact Lenses", "Eye Drops", "Frames", "Accessories"]
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/auth/login")
+    }
+  }, [user, authLoading, router])
 
   useEffect(() => {
     const fetchProducts = async () => {

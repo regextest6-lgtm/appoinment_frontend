@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useAuth } from "@/lib/auth-context"
 import { AdminSidebar } from "@/components/admin-sidebar"
 import { DashboardOverview } from "@/components/admin/dashboard-overview"
 import { DoctorsManagement } from "@/components/admin/doctors-management"
@@ -10,11 +11,13 @@ import { AppointmentsManagement } from "@/components/admin/appointments-manageme
 import { MessagesManagement } from "@/components/admin/messages-management"
 import { AnalyticsView } from "@/components/admin/analytics-view"
 import { SettingsView } from "@/components/admin/settings-view"
+import { BloodBanksManagement } from "@/components/admin/blood-banks-management"
 
-type MenuType = "dashboard" | "doctors" | "departments" | "services" | "appointments" | "messages" | "analytics" | "settings"
+type MenuType = "dashboard" | "doctors" | "departments" | "services" | "appointments" | "messages" | "analytics" | "settings" | "blood-banks"
 type ActionType = "overview" | "register" | "view" | "add" | null
 
 export default function AdminDashboard() {
+  const { token } = useAuth()
   const [currentMenu, setCurrentMenu] = useState<MenuType>("dashboard")
   const [currentAction, setCurrentAction] = useState<ActionType>("overview")
 
@@ -75,6 +78,9 @@ export default function AdminDashboard() {
 
             {/* Settings */}
             {currentMenu === "settings" && <SettingsView />}
+
+            {/* Blood Banks */}
+            {currentMenu === "blood-banks" && token && <BloodBanksManagement token={token} />}
           </div>
         </main>
       </div>

@@ -127,6 +127,26 @@ export interface EyeProduct {
   is_active?: boolean
 }
 
+export interface BloodBank {
+  id: number
+  name: string
+  description?: string
+  phone: string
+  location?: string
+  latitude?: string
+  longitude?: string
+  available_24_7: boolean
+  is_active?: boolean
+  blood_group_o_positive: number
+  blood_group_o_negative: number
+  blood_group_a_positive: number
+  blood_group_a_negative: number
+  blood_group_b_positive: number
+  blood_group_b_negative: number
+  blood_group_ab_positive: number
+  blood_group_ab_negative: number
+}
+
 export interface Appointment {
   id: number
   patient_name?: string
@@ -656,6 +676,89 @@ export async function updateEyeProduct(
  */
 export async function deleteEyeProduct(token: string, productId: number): Promise<void> {
   await apiCall<void>(`/eye-products/${productId}`, token, {
+    method: "DELETE",
+  })
+}
+
+// ============================================================================
+// BLOOD BANKS MANAGEMENT
+// ============================================================================
+
+/**
+ * Get all blood banks
+ */
+export async function getBloodBanksList(
+  token: string,
+  skip: number = 0,
+  limit: number = 10,
+  available24_7: boolean = false,
+  bloodGroup?: string
+): Promise<BloodBank[]> {
+  let url = `/blood-banks?skip=${skip}&limit=${limit}`
+  if (available24_7) {
+    url += `&available_24_7=true`
+  }
+  if (bloodGroup) {
+    url += `&blood_group=${bloodGroup}`
+  }
+  return apiCall<BloodBank[]>(url, token)
+}
+
+/**
+ * Get blood bank by ID
+ */
+export async function getBloodBankById(token: string, bankId: number): Promise<BloodBank> {
+  return apiCall<BloodBank>(`/blood-banks/${bankId}`, token)
+}
+
+/**
+ * Create new blood bank
+ */
+export async function createBloodBank(
+  token: string,
+  data: {
+    name: string
+    description?: string
+    phone: string
+    location?: string
+    latitude?: string
+    longitude?: string
+    available_24_7?: boolean
+    blood_group_o_positive?: number
+    blood_group_o_negative?: number
+    blood_group_a_positive?: number
+    blood_group_a_negative?: number
+    blood_group_b_positive?: number
+    blood_group_b_negative?: number
+    blood_group_ab_positive?: number
+    blood_group_ab_negative?: number
+  }
+): Promise<BloodBank> {
+  return apiCall<BloodBank>("/blood-banks", token, {
+    method: "POST",
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Update blood bank
+ */
+export async function updateBloodBank(
+  token: string,
+  bankId: number,
+  data: Partial<BloodBank>
+): Promise<BloodBank> {
+  return apiCall<BloodBank>(`/blood-banks/${bankId}`, token, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * Delete blood bank
+ */
+export async function deleteBloodBank(token: string, bankId: number): Promise<void> {
+  await apiCall<void>(`/blood-banks/${bankId}`, token, {
     method: "DELETE",
   })
 }

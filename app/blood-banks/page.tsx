@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card } from "@/components/ui/card"
 import { getBloodBanks } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 import { Phone, MapPin, Clock, Droplet } from "lucide-react"
 
 interface BloodBank {
@@ -26,11 +28,20 @@ interface BloodBank {
 }
 
 export default function BloodBanksPage() {
+  const router = useRouter()
+  const { user, isLoading: authLoading } = useAuth()
   const [banks, setBanks] = useState<BloodBank[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedBloodGroup, setSelectedBloodGroup] = useState<string | null>(null)
 
   const bloodGroups = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/auth/login")
+    }
+  }, [user, authLoading, router])
 
   useEffect(() => {
     const fetchBanks = async () => {
