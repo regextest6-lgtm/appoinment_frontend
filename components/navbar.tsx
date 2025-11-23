@@ -12,16 +12,25 @@ export function Navbar() {
   const router = useRouter()
   const { user, userType, logout, isLoading } = useAuth()
 
-  const navLinks = [
+  // Public links - always visible
+  const publicNavLinks = [
     { href: "/", label: "Home" },
     { href: "/about", label: "About" },
     { href: "/doctors", label: "Doctors List" },
     { href: "/departments", label: "Departments" },
     { href: "/services", label: "Services" },
-    { href: "/ambulance-services", label: "Ambulance" },
-    { href: "/eye-products", label: "Eye Products" },
     { href: "/contact", label: "Contact" },
   ]
+
+  // Protected links - only visible when logged in
+  const protectedNavLinks = [
+    { href: "/ambulance-services", label: "Ambulance" },
+    { href: "/eye-products", label: "Eye Products" },
+    { href: "/blood-banks", label: "Blood Banks" },
+  ]
+
+  // Combine links based on login status
+  const navLinks = !isLoading && user ? [...publicNavLinks, ...protectedNavLinks] : publicNavLinks
 
   const handleLogout = () => {
     logout()
@@ -50,7 +59,7 @@ export function Navbar() {
           <div className="text-xl font-bold text-primary">HealthCare</div>
         </Link>
 
-        {/* Desktop Navigation */}
+        {/* Desktop Navigation - Always visible */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <div key={link.href}>

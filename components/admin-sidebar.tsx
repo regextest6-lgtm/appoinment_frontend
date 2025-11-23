@@ -21,6 +21,7 @@ import {
   ChevronDown,
   Plus,
   Eye,
+  Droplet,
 } from "lucide-react"
 
 interface NavItem {
@@ -137,6 +138,22 @@ export function AdminSidebar({ onMenuClick }: AdminSidebarProps) {
           label: "View Analytics",
           icon: <BarChart3 className="w-4 h-4" />,
           action: () => onMenuClick("analytics", "view"),
+        },
+      ],
+    },
+    {
+      label: "Blood Banks",
+      icon: <Droplet className="w-5 h-5" />,
+      submenu: [
+        {
+          label: "Add Blood Bank",
+          icon: <Plus className="w-4 h-4" />,
+          action: () => onMenuClick("blood-banks", "add"),
+        },
+        {
+          label: "View Blood Banks",
+          icon: <Eye className="w-4 h-4" />,
+          action: () => onMenuClick("blood-banks", "view"),
         },
       ],
     },
