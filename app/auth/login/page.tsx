@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from "@/lib/auth-context"
 import { loginPatient, loginDoctor } from "@/lib/api"
 import { Phone, Lock, AlertCircle, X } from "lucide-react"
+import { TestCredentials } from "@/components/test-credentials"
 
 interface LoginFormData {
   phone: string
@@ -273,6 +274,7 @@ export default function LoginPage() {
       </section>
 
       <Footer />
+      <TestCredentials />
     </div>
   )
 }

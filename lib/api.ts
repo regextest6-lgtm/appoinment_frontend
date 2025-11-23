@@ -30,6 +30,24 @@ export interface ApiResponse<T> {
   detail?: string
 }
 
+export interface User {
+  id: number
+  phone: string
+  full_name?: string
+  email?: string
+  is_active: boolean
+  is_admin: boolean
+  is_doctor: boolean
+  created_at?: string
+}
+
+export interface LoginResponse {
+  user: User
+  access_token: string
+  refresh_token: string
+  token_type?: string
+}
+
 export async function apiCall<T>(
   endpoint: string,
   options?: RequestInit
@@ -187,12 +205,12 @@ export async function registerPatient(data: {
 export async function loginPatient(data: {
   phone: string
   password: string
-}) {
+}): Promise<LoginResponse> {
   try {
     // Truncate password to 72 bytes (bcrypt limit)
     const truncatedPassword = data.password.substring(0, 72)
     
-    return await apiCall("/auth/login", {
+    return await apiCall<LoginResponse>("/auth/login", {
       method: "POST",
       body: JSON.stringify({
         ...data,
@@ -207,12 +225,12 @@ export async function loginPatient(data: {
 export async function loginDoctor(data: {
   phone: string
   password: string
-}) {
+}): Promise<LoginResponse> {
   try {
     // Truncate password to 72 bytes (bcrypt limit)
     const truncatedPassword = data.password.substring(0, 72)
     
-    return await apiCall("/auth/login", {
+    return await apiCall<LoginResponse>("/auth/login", {
       method: "POST",
       body: JSON.stringify({
         ...data,
@@ -227,12 +245,12 @@ export async function loginDoctor(data: {
 export async function loginAdmin(data: {
   phone: string
   password: string
-}) {
+}): Promise<LoginResponse> {
   try {
     // Truncate password to 72 bytes (bcrypt limit)
     const truncatedPassword = data.password.substring(0, 72)
     
-    return await apiCall("/auth/login", {
+    return await apiCall<LoginResponse>("/auth/login", {
       method: "POST",
       body: JSON.stringify({
         ...data,
