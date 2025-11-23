@@ -1,4 +1,28 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"
+// Ensure API_URL always has the /api/v1 prefix
+const getApiUrl = () => {
+  // Production: Use Render backend
+  // Development: Use localhost
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
+    (typeof window !== "undefined" && window.location.hostname === "localhost" 
+      ? "http://localhost:8000/api/v1"
+      : "https://appoinment-backend-gy1s.onrender.com/api/v1")
+  
+  // If the URL doesn't end with /api/v1, append it
+  if (!baseUrl.includes("/api/v1")) {
+    return `${baseUrl}/api/v1`.replace(/\/+/g, "/").replace(":/", "://")
+  }
+  
+  return baseUrl
+}
+
+const API_URL = getApiUrl()
+
+// Log API URL for debugging
+if (typeof window !== "undefined") {
+  console.log("API_URL configured as:", API_URL)
+  console.log("NEXT_PUBLIC_API_URL env:", process.env.NEXT_PUBLIC_API_URL)
+  console.log("Hostname:", window.location.hostname)
+}
 
 export interface ApiResponse<T> {
   data?: T
@@ -283,4 +307,22 @@ export async function getEyeProductsByCategory(category: string) {
 
 export async function getEyeProductsByBrand(brand: string) {
   return apiCall(`/eye-products?brand=${brand}`)
+}
+
+// Blood Banks
+export async function getBloodBanks(available24_7: boolean = false, bloodGroup?: string) {
+  let url = "/blood-banks"
+  const params = new URLSearchParams()
+  if (available24_7) params.append("available_24_7", "true")
+  if (bloodGroup) params.append("blood_group", bloodGroup)
+  if (params.toString()) url += `?${params.toString()}`
+  return apiCall(url)
+}
+
+export async function getBloodBankById(id: number) {
+  return apiCall(`/blood-banks/${id}`)
+}
+
+export async function getBloodBanksByBloodGroup(bloodGroup: string) {
+  return apiCall(`/blood-banks?blood_group=${bloodGroup}`)
 }

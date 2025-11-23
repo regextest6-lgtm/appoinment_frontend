@@ -14,10 +14,11 @@
 [build.environment]
   NODE_VERSION = "20.9.0"
   NPM_VERSION = "9.8.1"
-  NEXT_PUBLIC_API_URL = "https://appoinment-backend-gy1s.onrender.com"
+  NEXT_PUBLIC_API_URL = "https://appoinment-backend-gy1s.onrender.com/api/v1"
   NEXT_PUBLIC_API_BASE_URL = "https://appoinment-backend-gy1s.onrender.com/api/v1"
   NEXT_PUBLIC_APP_NAME = "Modern Hospital"
   NEXT_PUBLIC_APP_VERSION = "1.0.0"
+  NEXT_PUBLIC_BUILD_TIME = "2025-11-21T18:35:00Z"
 
 # Redirects for Next.js
 [[redirects]]
