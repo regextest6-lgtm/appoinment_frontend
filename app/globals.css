@@ -11,7 +11,7 @@
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0 0);
-  --primary: oklch(0.45 0.2 260); /* Medical blue */
+  --primary: oklch(0.4547 0.0555 210.75); /* Medical blue */
   --primary-foreground: oklch(0.98 0 0);
   --secondary: oklch(0.55 0.15 180); /* Teal accent */
   --secondary-foreground: oklch(1 0 0);

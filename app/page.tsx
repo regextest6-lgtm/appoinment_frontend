@@ -172,24 +172,25 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section
-        className="container mx-auto w-full min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex items-center justify-center"
+        className="w-full min-h-screen flex items-center justify-center relative"
         style={{
           backgroundImage: 'url("/bg_img.jpg")',
           backgroundSize: "cover",
           backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
       >
-        <div className="container mx-auto">
+        <div className="container text-start">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Welcome to <span className="text-primary">HealthCare Hospital</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Welcome to <br/> <span className="text-primary">Nazmul Modern Hospital</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-neutral-800 max-w-2xl mx-auto mb-8">
               Providing exceptional medical care with state-of-the-art facilities and experienced healthcare
               professionals dedicated to your wellness.
             </p>
