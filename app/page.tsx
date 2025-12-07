@@ -179,7 +179,7 @@ export default function HomePage() {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
         }}
-      >
+      > 
         <div className="container text-start">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -250,7 +250,7 @@ export default function HomePage() {
                 whileHover={{ y: -8 }}
                 className="group relative overflow-hidden rounded-lg flex-shrink-0 w-full md:w-96"
               >
-                <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                <Card className="h-full overflow-hidden border-0 py-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <div className="relative h-48 overflow-hidden bg-muted">
                     <Image
                       src={dept.image_url || "/placeholder.svg"}
