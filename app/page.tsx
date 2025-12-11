@@ -166,6 +166,15 @@ export default function HomePage() {
     },
   ]
 
+  function Feature({ text }) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-teal-500 text-lg">✔</span>
+        <p className="text-gray-700">{text}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -180,17 +189,17 @@ export default function HomePage() {
           backgroundRepeat: "no-repeat",
         }}
       > 
-        <div className="container text-start">
+        <div className="container text-left flex items-center min-h-[450px]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-12"
+            className="mb-12 max-w-xl"
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Welcome to <br/> <span className="text-primary">Nazmul Modern Hospital</span>
             </h1>
-            <p className="text-lg text-neutral-800 max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-neutral-800 max-w-2xl mb-8">
               Providing exceptional medical care with state-of-the-art facilities and experienced healthcare
               professionals dedicated to your wellness.
             </p>
@@ -216,9 +225,9 @@ export default function HomePage() {
               { icon: Heart, label: "Patients Served", value: "10,000+" },
               { icon: Users, label: "Expert Doctors", value: "150+" },
               { icon: Award, label: "Years Experience", value: "25+" },
-              { icon: Clock, label: "Available 24/7", value: "Always" },
+              { icon: Clock, label: "Emergency Ambulance", value: "Always" },
             ].map((stat, idx) => (
-              <motion.div key={idx} variants={itemVariants} whileHover={{ translateY: -5 }} className="text-center">
+              <motion.div key={idx} variants={itemVariants} whileHover={{ translateY: -5 }} className="bg-white shadow-lg rounded-xl p-6 text-center">
                 <stat.icon className="w-12 h-12 text-primary mx-auto mb-3" />
                 <p className="text-sm md:text-base text-muted-foreground mb-1">{stat.label}</p>
                 <p className="text-2xl md:text-3xl font-bold text-primary">{stat.value}</p>
@@ -227,6 +236,59 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      <section className="w-full bg-[#F4FBFC] py-20">
+      {/* Main About Section */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 mt-16 items-center">
+        {/* Left Content */}
+        <div>
+          <span className="text-primary font-semibold tracking-wide">ABOUT US</span>
+          <h1 className="text-2xl md:text-3xl font-bold mt-3 leading-snug">
+            Welcome To Medcare <br /> Central Hospital
+          </h1>
+
+          <p className="text-gray-600 mt-6 leading-relaxed">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu
+            turpis molestie, dictum est a, mattis tellus. Sed dignissim metus nec
+            fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus
+            elit sed risus.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+            <Feature text="15+ Years of excellence" />
+            <Feature text="24/7 Hour Medical Service" />
+            <Feature text="A Multispecialty hospital" />
+            <Feature text="A team of professionals" />
+          </div>
+
+          <button className="mt-8 bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg">
+            Book An Appointment
+          </button>
+        </div>
+
+        {/* Right Image */}
+        <div className="relative w-fit mx-auto">
+      {/* Mint top-right box */}
+      <div
+        className="absolute -top-6 -right-6 w-[360px] h-[360px] rounded-md"
+        style={{ backgroundColor: "#7ED9D0" }}
+      />
+
+      {/* Blue bottom-left box */}
+      <div
+        className="absolute -bottom-6 -left-6 w-[380px] h-[380px] rounded-md"
+        style={{ backgroundColor: "#BACBEF" }}
+      />
+
+      {/* Main image */}
+      <img
+        src="https://images.unsplash.com/photo-1550831107-1553da8c8464"
+        alt="Doctor"
+        className="relative z-10 w-[500px] h-[500px] object-cover"
+      />
+    </div>
+      </div>
+    </section>
 
       {/* Auto-Scrolling Departments */}
       <section className="w-full py-20 px-4 bg-muted/50">

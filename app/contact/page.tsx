@@ -75,7 +75,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="w-full py-20 px-4 flex-1">
+      <section className="w-5xl mx-auto py-20 px-4 flex-1">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20">
             {/* Contact Info Cards */}
@@ -86,9 +86,9 @@ export default function ContactPage() {
               className="lg:col-span-1 space-y-6"
             >
               {[
-                { icon: Phone, label: "Phone", value: "(555) 123-4567" },
-                { icon: Mail, label: "Email", value: "info@healthcare.com" },
-                { icon: MapPin, label: "Address", value: "123 Medical Plaza, City, State 12345" },
+                { icon: Phone, label: "Hot Line", value: "(+880)1312-666677)\n(+880)1312-666688)\n(+880)1312-666699)" },
+                { icon: Mail, label: "Email", value: "nazmulmodernhospital@gmail.com" },
+                { icon: MapPin, label: "Address", value: "Moni Mukta Jhumka Complex Comilla, Daudkandi Bridge Toll Plaza, Daudkandi" },
               ].map((contact, idx) => (
                 <motion.div
                   key={idx}
@@ -96,10 +96,10 @@ export default function ContactPage() {
                   whileHover={{ x: 5 }}
                   className="flex gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
                 >
-                  <contact.icon className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <contact.icon className="w-6 h-6 flex-shrink-0 mt-1 text-red-600" />
                   <div>
-                    <h3 className="font-bold text-foreground mb-1">{contact.label}</h3>
-                    <p className="text-muted-foreground text-sm">{contact.value}</p>
+                    <h3 className="font-bold mb-1 text-red-600">{contact.label}</h3>
+                    <p className="text-sm whitespace-pre-line text-primary font-semibold">{contact.value}</p>
                   </div>
                 </motion.div>
               ))}
