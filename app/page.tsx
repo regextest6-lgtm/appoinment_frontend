@@ -12,6 +12,8 @@ import { Heart, Users, Award, Clock, Star } from "lucide-react"
 import { AppointmentModal } from "@/components/appointment-modal"
 import { getDepartments, getDoctors, getBloodBanks, getAmbulanceServices, getEyeProducts } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
+import TestimonialSection from "@/components/testimonial"
+import Blogs from "@/components/blogs"
 
 interface Department {
   id: number
@@ -100,71 +102,6 @@ export default function HomePage() {
       transition: { duration: 0.5 },
     },
   }
-
-  const blogs = [
-    {
-      id: 1,
-      title: "Understanding Heart Disease Prevention",
-      excerpt: "Learn key strategies to prevent heart disease and maintain a healthy cardiovascular system.",
-      category: "Cardiology",
-      image: "/heart-health-prevention.jpg",
-      date: "2025-01-28",
-    },
-    {
-      id: 2,
-      title: "Tips for Managing Chronic Pain",
-      excerpt: "Discover effective techniques and treatments for managing chronic pain conditions.",
-      category: "Pain Management",
-      image: "/pain-management-techniques.jpg",
-      date: "2025-01-25",
-    },
-    {
-      id: 3,
-      title: "Mental Health Awareness in 2025",
-      excerpt: "A comprehensive guide to mental health awareness and maintaining emotional wellness.",
-      category: "Mental Health",
-      image: "/mental-health-wellness.png",
-      date: "2025-01-22",
-    },
-    {
-      id: 4,
-      title: "Nutrition for Better Health",
-      excerpt: "Explore balanced diet plans and nutritional guidance for optimal health outcomes.",
-      category: "Nutrition",
-      image: "/healthy-nutrition-diet.jpg",
-      date: "2025-01-20",
-    },
-  ]
-
-  const testimonials = [
-    {
-      id: 1,
-      name: "John Smith",
-      role: "Patient",
-      content:
-        "The care I received at HealthCare Hospital was exceptional. The doctors were professional and attentive to my needs.",
-      avatar: "/patient-testimonial.jpg",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Sarah Williams",
-      role: "Patient",
-      content:
-        "Outstanding medical facility with the latest equipment. I felt confident in the expertise of the healthcare team.",
-      avatar: "/happy-patient.jpg",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      role: "Patient",
-      content:
-        "The entire staff was welcoming and supportive throughout my treatment. Highly recommended for anyone seeking quality healthcare.",
-      avatar: "/satisfied-patient.jpg",
-      rating: 5,
-    },
-  ]
 
   function Feature({ text }) {
     return (
@@ -368,7 +305,7 @@ export default function HomePage() {
                 className="group cursor-pointer"
               >
                 <Link href={`/doctors/${doctor.id}`}>
-                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 py-0">
                     <div className="relative h-64 overflow-hidden bg-muted">
                       <Image
                         src={doctor.profile_image_url || "/placeholder.svg"}
@@ -509,100 +446,10 @@ export default function HomePage() {
         </section>
       )}
 
-      <section className="w-full py-20 px-4 bg-muted/50">
-        <div className="container mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Health & Wellness Blog</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Latest articles on health, wellness, and medical insights
-            </p>
-          </motion.div>
+      {/* Blog Section */}
+      <Blogs />
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {blogs.map((blog) => (
-              <motion.div key={blog.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col">
-                  <div className="relative h-40 overflow-hidden bg-muted">
-                    <Image
-                      src={blog.image || "/placeholder.svg"}
-                      alt={blog.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                        {blog.category}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{blog.date}</span>
-                    </div>
-                    <h3 className="font-bold text-base text-foreground mb-2 line-clamp-2">{blog.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">{blog.excerpt}</p>
-                    <Link href="#" className="text-primary hover:text-primary/80 font-medium text-sm transition-colors">
-                      Read More →
-                    </Link>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      <section className="w-full py-20 px-4">
-        <div className="container mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Patient Testimonials</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Hear from our satisfied patients about their experiences
-            </p>
-          </motion.div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            {testimonials.map((testimonial) => (
-              <motion.div key={testimonial.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col p-6">
-                  <div className="flex items-start gap-1 mb-4">
-                    {Array(testimonial.rating)
-                      .fill(0)
-                      .map((_, i) => (
-                        <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
-                      ))}
-                  </div>
-
-                  <p className="text-foreground mb-6 flex-1 italic">"{testimonial.content}"</p>
-
-                  <div className="flex items-center gap-3 pt-4 border-t border-border">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                      <Image
-                        src={testimonial.avatar || "/placeholder.svg"}
-                        alt={testimonial.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-bold text-foreground text-sm">{testimonial.name}</p>
-                      <p className="text-xs text-muted-foreground">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      <TestimonialSection />
 
       <AppointmentModal isOpen={showAppointmentModal} onClose={() => setShowAppointmentModal(false)} />
 
