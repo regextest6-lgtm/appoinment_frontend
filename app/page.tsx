@@ -14,6 +14,7 @@ import { getDepartments, getDoctors, getBloodBanks, getAmbulanceServices, getEye
 import { useAuth } from "@/lib/auth-context"
 import TestimonialSection from "@/components/testimonial"
 import Blogs from "@/components/blogs"
+import FacilitiesSection from "@/components/services"
 
 interface Department {
   id: number
@@ -49,10 +50,10 @@ export default function HomePage() {
       try {
         const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        setDepartments(deptData || [])
+        setDepartments(Array.isArray(deptData) ? deptData : [])
         // Filter out doctors with invalid data structure
-        const validDoctors = (doctorData || []).filter(
-          (doc) => doc && doc.user && doc.user.full_name
+        const validDoctors = (Array.isArray(doctorData) ? doctorData : []).filter(
+          (doc: any) => doc && doc.user && doc.user.full_name
         )
         setTopDoctors(validDoctors.slice(0, 3))
       } catch (error) {
@@ -103,7 +104,7 @@ export default function HomePage() {
     },
   }
 
-  function Feature({ text }) {
+  function Feature({ text }: { text: string }) {
     return (
       <div className="flex items-center gap-2">
         <span className="text-teal-500 text-lg">✔</span>
@@ -247,7 +248,7 @@ export default function HomePage() {
               <motion.div
                 key={dept.id}
                 whileHover={{ y: -8 }}
-                className="group relative overflow-hidden rounded-lg flex-shrink-0 w-full md:w-96"
+                className="group relative overflow-hidden rounded-lg shrink-0 w-full md:w-96"
               >
                 <Card className="h-full overflow-hidden border-0 py-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <div className="relative h-48 overflow-hidden bg-muted">
@@ -345,7 +346,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="w-full py-16 px-4 bg-gradient-to-r from-primary/20 to-accent/20">
+      <section className="w-full py-16 px-4 bg-linear-to-r from-primary/20 to-accent/20">
         <div className="container mx-auto text-center">
           <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -367,7 +368,7 @@ export default function HomePage() {
 
       {/* Patient Services Section - Only for logged-in patients */}
       {!authLoading && user && userType === "patient" && (
-        <section className="w-full py-20 px-4 bg-gradient-to-b from-blue-50 to-transparent">
+        <section className="w-full py-20 px-4 bg-linear-to-r from-blue-50 to-transparent">
           <div className="container mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Quick Access Services</h2>
@@ -446,6 +447,9 @@ export default function HomePage() {
         </section>
       )}
 
+      {/* Services Section */}
+      <FacilitiesSection/>
+
       {/* Blog Section */}
       <Blogs />
 
@@ -456,4 +460,4 @@ export default function HomePage() {
       <Footer />
     </div>
   )
-}
+};

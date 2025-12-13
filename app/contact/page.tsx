@@ -61,7 +61,7 @@ export default function ContactPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="w-full py-16 px-4 bg-gradient-to-r from-primary/10 to-accent/10">
+      <section className="w-full py-16 px-4 bg-linear-to-r from-primary/10 to-accent/10">
         <div className="container mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -96,7 +96,7 @@ export default function ContactPage() {
                   whileHover={{ x: 5 }}
                   className="flex gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
                 >
-                  <contact.icon className="w-6 h-6 flex-shrink-0 mt-1 text-red-600" />
+                  <contact.icon className="w-6 h-6 shrink-0 mt-1 text-red-600" />
                   <div>
                     <h3 className="font-bold mb-1 text-red-600">{contact.label}</h3>
                     <p className="text-sm whitespace-pre-line text-primary font-semibold">{contact.value}</p>
