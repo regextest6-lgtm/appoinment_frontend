@@ -11,7 +11,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* About */}
           <div>
-            <h3 className="font-bold text-primary mb-4">HealthCare Hospital</h3>
+            <h3 className="font-bold text-primary mb-4">Nazmul Modern Hospital</h3>
             <p className="text-sm text-muted-foreground">
               Providing quality medical services with experienced healthcare professionals.
             </p>

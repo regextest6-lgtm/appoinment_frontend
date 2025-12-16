@@ -12,6 +12,9 @@ import { Heart, Users, Award, Clock, Star } from "lucide-react"
 import { AppointmentModal } from "@/components/appointment-modal"
 import { getDepartments, getDoctors, getBloodBanks, getAmbulanceServices, getEyeProducts } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
+import TestimonialSection from "@/components/testimonial"
+import Blogs from "@/components/blogs"
+import FacilitiesSection from "@/components/services"
 
 interface Department {
   id: number
@@ -47,10 +50,10 @@ export default function HomePage() {
       try {
         const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        setDepartments(deptData || [])
+        setDepartments(Array.isArray(deptData) ? deptData : [])
         // Filter out doctors with invalid data structure
-        const validDoctors = (doctorData || []).filter(
-          (doc) => doc && doc.user && doc.user.full_name
+        const validDoctors = (Array.isArray(doctorData) ? doctorData : []).filter(
+          (doc: any) => doc && doc.user && doc.user.full_name
         )
         setTopDoctors(validDoctors.slice(0, 3))
       } catch (error) {
@@ -101,70 +104,14 @@ export default function HomePage() {
     },
   }
 
-  const blogs = [
-    {
-      id: 1,
-      title: "Understanding Heart Disease Prevention",
-      excerpt: "Learn key strategies to prevent heart disease and maintain a healthy cardiovascular system.",
-      category: "Cardiology",
-      image: "/heart-health-prevention.jpg",
-      date: "2025-01-28",
-    },
-    {
-      id: 2,
-      title: "Tips for Managing Chronic Pain",
-      excerpt: "Discover effective techniques and treatments for managing chronic pain conditions.",
-      category: "Pain Management",
-      image: "/pain-management-techniques.jpg",
-      date: "2025-01-25",
-    },
-    {
-      id: 3,
-      title: "Mental Health Awareness in 2025",
-      excerpt: "A comprehensive guide to mental health awareness and maintaining emotional wellness.",
-      category: "Mental Health",
-      image: "/mental-health-wellness.png",
-      date: "2025-01-22",
-    },
-    {
-      id: 4,
-      title: "Nutrition for Better Health",
-      excerpt: "Explore balanced diet plans and nutritional guidance for optimal health outcomes.",
-      category: "Nutrition",
-      image: "/healthy-nutrition-diet.jpg",
-      date: "2025-01-20",
-    },
-  ]
-
-  const testimonials = [
-    {
-      id: 1,
-      name: "John Smith",
-      role: "Patient",
-      content:
-        "The care I received at HealthCare Hospital was exceptional. The doctors were professional and attentive to my needs.",
-      avatar: "/patient-testimonial.jpg",
-      rating: 5,
-    },
-    {
-      id: 2,
-      name: "Sarah Williams",
-      role: "Patient",
-      content:
-        "Outstanding medical facility with the latest equipment. I felt confident in the expertise of the healthcare team.",
-      avatar: "/happy-patient.jpg",
-      rating: 5,
-    },
-    {
-      id: 3,
-      name: "Michael Johnson",
-      role: "Patient",
-      content:
-        "The entire staff was welcoming and supportive throughout my treatment. Highly recommended for anyone seeking quality healthcare.",
-      avatar: "/satisfied-patient.jpg",
-      rating: 5,
-    },
-  ]
+  function Feature({ text }: { text: string }) {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-teal-500 text-lg">✔</span>
+        <p className="text-gray-700">{text}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -172,30 +119,31 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section
-        className="container mx-auto w-full min-h-screen bg-gradient-to-br from-primary/10 via-background to-accent/10 flex items-center justify-center"
+        className="w-full min-h-screen flex items-center justify-center relative"
         style={{
           backgroundImage: 'url("/bg_img.jpg")',
           backgroundSize: "cover",
           backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
         }}
-      >
-        <div className="container mx-auto">
+      > 
+        <div className="container text-left flex items-center min-h-[450px]">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-center mb-12"
+            className="mb-12 max-w-xl"
           >
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Welcome to <span className="text-primary">HealthCare Hospital</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Welcome to <br/> <span className="text-primary">Nazmul Modern Hospital</span>
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+            <p className="text-lg text-neutral-800 max-w-2xl mb-8">
               Providing exceptional medical care with state-of-the-art facilities and experienced healthcare
               professionals dedicated to your wellness.
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Link href="/appointment">Book an Appointment</Link>
+                <Link href="/auth/login">Book an Appointment</Link>
               </Button>
             </motion.div>
           </motion.div>
@@ -215,9 +163,9 @@ export default function HomePage() {
               { icon: Heart, label: "Patients Served", value: "10,000+" },
               { icon: Users, label: "Expert Doctors", value: "150+" },
               { icon: Award, label: "Years Experience", value: "25+" },
-              { icon: Clock, label: "Available 24/7", value: "Always" },
+              { icon: Clock, label: "Emergency Ambulance", value: "Always" },
             ].map((stat, idx) => (
-              <motion.div key={idx} variants={itemVariants} whileHover={{ translateY: -5 }} className="text-center">
+              <motion.div key={idx} variants={itemVariants} whileHover={{ translateY: -5 }} className="bg-white shadow-lg rounded-xl p-6 text-center">
                 <stat.icon className="w-12 h-12 text-primary mx-auto mb-3" />
                 <p className="text-sm md:text-base text-muted-foreground mb-1">{stat.label}</p>
                 <p className="text-2xl md:text-3xl font-bold text-primary">{stat.value}</p>
@@ -225,6 +173,59 @@ export default function HomePage() {
             ))}
           </motion.div>
         </div>
+      </section>
+
+      <section className="w-full bg-[#F4FBFC] py-20">
+      {/* Main About Section */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 mt-16 items-center">
+        {/* Left Content */}
+        <div>
+          <span className="text-primary font-semibold tracking-wide">ABOUT US</span>
+          <h1 className="text-2xl md:text-3xl font-bold mt-3 leading-snug">
+            Welcome To Medcare <br /> Central Hospital
+          </h1>
+
+          <p className="text-gray-600 mt-6 leading-relaxed">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam eu
+            turpis molestie, dictum est a, mattis tellus. Sed dignissim metus nec
+            fringilla accumsan, risus sem sollicitudin lacus, ut interdum tellus
+            elit sed risus.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
+            <Feature text="15+ Years of excellence" />
+            <Feature text="24/7 Hour Medical Service" />
+            <Feature text="A Multispecialty hospital" />
+            <Feature text="A team of professionals" />
+          </div>
+
+          <button className="mt-8 bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg">
+            Book An Appointment
+          </button>
+        </div>
+
+        {/* Right Image */}
+        <div className="relative w-fit mx-auto">
+      {/* Mint top-right box */}
+      <div
+        className="absolute -top-6 -right-6 w-[360px] h-[360px] rounded-md"
+        style={{ backgroundColor: "#7ED9D0" }}
+      />
+
+      {/* Blue bottom-left box */}
+      <div
+        className="absolute -bottom-6 -left-6 w-[380px] h-[380px] rounded-md"
+        style={{ backgroundColor: "#BACBEF" }}
+      />
+
+      {/* Main image */}
+      <img
+        src="https://images.unsplash.com/photo-1550831107-1553da8c8464"
+        alt="Doctor"
+        className="relative z-10 w-[500px] h-[500px] object-cover"
+      />
+    </div>
+      </div>
       </section>
 
       {/* Auto-Scrolling Departments */}
@@ -247,9 +248,9 @@ export default function HomePage() {
               <motion.div
                 key={dept.id}
                 whileHover={{ y: -8 }}
-                className="group relative overflow-hidden rounded-lg flex-shrink-0 w-full md:w-96"
+                className="group relative overflow-hidden rounded-lg shrink-0 w-full md:w-96"
               >
-                <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                <Card className="h-full overflow-hidden border-0 py-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <div className="relative h-48 overflow-hidden bg-muted">
                     <Image
                       src={dept.image_url || "/placeholder.svg"}
@@ -305,7 +306,7 @@ export default function HomePage() {
                 className="group cursor-pointer"
               >
                 <Link href={`/doctors/${doctor.id}`}>
-                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 py-0">
                     <div className="relative h-64 overflow-hidden bg-muted">
                       <Image
                         src={doctor.profile_image_url || "/placeholder.svg"}
@@ -345,7 +346,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="w-full py-16 px-4 bg-gradient-to-r from-primary/20 to-accent/20">
+      <section className="w-full py-16 px-4 bg-linear-to-r from-primary/20 to-accent/20">
         <div className="container mx-auto text-center">
           <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -367,7 +368,7 @@ export default function HomePage() {
 
       {/* Patient Services Section - Only for logged-in patients */}
       {!authLoading && user && userType === "patient" && (
-        <section className="w-full py-20 px-4 bg-gradient-to-b from-blue-50 to-transparent">
+        <section className="w-full py-20 px-4 bg-linear-to-r from-blue-50 to-transparent">
           <div className="container mx-auto">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Quick Access Services</h2>
@@ -446,104 +447,17 @@ export default function HomePage() {
         </section>
       )}
 
-      <section className="w-full py-20 px-4 bg-muted/50">
-        <div className="container mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Health & Wellness Blog</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Latest articles on health, wellness, and medical insights
-            </p>
-          </motion.div>
+      {/* Services Section */}
+      <FacilitiesSection/>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {blogs.map((blog) => (
-              <motion.div key={blog.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col">
-                  <div className="relative h-40 overflow-hidden bg-muted">
-                    <Image
-                      src={blog.image || "/placeholder.svg"}
-                      alt={blog.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs bg-primary/10 text-primary px-3 py-1 rounded-full font-medium">
-                        {blog.category}
-                      </span>
-                      <span className="text-xs text-muted-foreground">{blog.date}</span>
-                    </div>
-                    <h3 className="font-bold text-base text-foreground mb-2 line-clamp-2">{blog.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 flex-1 line-clamp-2">{blog.excerpt}</p>
-                    <Link href="#" className="text-primary hover:text-primary/80 font-medium text-sm transition-colors">
-                      Read More →
-                    </Link>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* Blog Section */}
+      <Blogs />
 
-      <section className="w-full py-20 px-4">
-        <div className="container mx-auto">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Patient Testimonials</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Hear from our satisfied patients about their experiences
-            </p>
-          </motion.div>
-
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
-          >
-            {testimonials.map((testimonial) => (
-              <motion.div key={testimonial.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col p-6">
-                  <div className="flex items-start gap-1 mb-4">
-                    {Array(testimonial.rating)
-                      .fill(0)
-                      .map((_, i) => (
-                        <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
-                      ))}
-                  </div>
-
-                  <p className="text-foreground mb-6 flex-1 italic">"{testimonial.content}"</p>
-
-                  <div className="flex items-center gap-3 pt-4 border-t border-border">
-                    <div className="relative w-12 h-12 rounded-full overflow-hidden bg-muted flex-shrink-0">
-                      <Image
-                        src={testimonial.avatar || "/placeholder.svg"}
-                        alt={testimonial.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="font-bold text-foreground text-sm">{testimonial.name}</p>
-                      <p className="text-xs text-muted-foreground">{testimonial.role}</p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      <TestimonialSection />
 
       <AppointmentModal isOpen={showAppointmentModal} onClose={() => setShowAppointmentModal(false)} />
 
       <Footer />
     </div>
   )
-}
+};

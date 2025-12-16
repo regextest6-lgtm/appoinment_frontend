@@ -21,8 +21,11 @@ interface Doctor {
     email?: string
   }
   specialty: string
+  degrees?: string
+  schedule_day?: string
+  schedule_time?: string
   bio?: string
-  profile_image_url?: string
+  image_url?: string
   years_of_experience?: number
 }
 
@@ -38,7 +41,7 @@ export default function DoctorsPage() {
     const fetchData = async () => {
       try {
         const doctorsData = await getDoctors()
-
+      console.log(doctorsData);
         // Filter out doctors with invalid data structure
         const validDoctors = (doctorsData || []).filter(
           (d) => d && d.user && d.user.full_name
@@ -46,6 +49,7 @@ export default function DoctorsPage() {
 
         setDoctors(validDoctors)
 
+        console.log(validDoctors);
         // Extract unique specialties from valid doctors
         const uniqueSpecialties = [...new Set(validDoctors.map((d: Doctor) => d.specialty))]
         setDepartments(uniqueSpecialties as string[])
@@ -76,7 +80,6 @@ export default function DoctorsPage() {
 
     setFilteredDoctors(results)
   }
-
   // Handle search on Enter key
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
@@ -109,7 +112,7 @@ export default function DoctorsPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="w-full py-16 px-4 bg-gradient-to-r from-primary/10 to-accent/10">
+      <section className="w-full py-16 px-4 bg-linear-to-r from-primary/10 to-accent/10">
         <div className="container mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -188,10 +191,10 @@ export default function DoctorsPage() {
             >
               {filteredDoctors.map((doctor) => (
                 <motion.div key={doctor.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 py-0">
                     <div className="relative h-72 overflow-hidden bg-muted">
                       <Image
-                        src={doctor.profile_image_url || "/placeholder.svg"}
+                        src={doctor.image_url || "/placeholder.svg"}
                         alt={doctor.user.full_name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
@@ -199,6 +202,7 @@ export default function DoctorsPage() {
                     </div>
                     <div className="p-6">
                       <h3 className="font-bold text-xl text-foreground mb-1">{doctor.user.full_name}</h3>
+                      <p className="text-primary font-medium mb-3">{doctor.degrees}</p>
                       <p className="text-primary font-medium mb-3">{doctor.specialty}</p>
                       <p className="text-sm text-muted-foreground mb-4">{doctor.bio || "Experienced healthcare professional"}</p>
                       <div className="space-y-2 mb-4 pb-4 border-b border-border">
@@ -206,10 +210,10 @@ export default function DoctorsPage() {
                           <Phone size={16} />
                           <span>{doctor.user.phone || "N/A"}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {/* <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail size={16} />
                           <span className="truncate">{doctor.user.email || "N/A"}</span>
-                        </div>
+                        </div> */}
                       </div>
                       <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                         <Link href={`/doctors/${doctor.id}`}>View Details</Link>

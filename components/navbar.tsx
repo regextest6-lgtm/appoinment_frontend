@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
 import { Menu, X, LogOut, User } from "lucide-react"
+import Image from "next/image"
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -52,11 +53,19 @@ export function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 container mx-auto border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 hover:scale-105 transition-transform">
-          <div className="text-xl font-bold text-primary">HealthCare</div>
+          <div className="relative w-16 h-16 text-xl font-bold text-primary">
+            <Image 
+              src="/logo.jpeg" 
+              alt="logo"
+              height={1000}
+              width={1000}
+              className="object-contain"
+            />
+          </div>
         </Link>
 
         {/* Desktop Navigation - Always visible */}
