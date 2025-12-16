@@ -2,7 +2,7 @@
 
 [build]
   # Build command
-  command = "npm run build"
+  command = "pnpm run build"
   
   # Directory to publish
   publish = ".next"
@@ -63,13 +63,13 @@
 
 # Context-specific settings
 [context.production]
-  command = "npm run build"
+  command = "pnpm run build"
   environment = { NEXT_PUBLIC_ENVIRONMENT = "production" }
 
 [context.deploy-preview]
-  command = "npm run build"
+  command = "pnpm run build"
   environment = { NEXT_PUBLIC_ENVIRONMENT = "preview" }
 
 [context.branch-deploy]
-  command = "npm run build"
+  command = "pnpm run build"
   environment = { NEXT_PUBLIC_ENVIRONMENT = "development" }
