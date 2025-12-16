@@ -143,7 +143,7 @@ export default function HomePage() {
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                <Link href="/appointment">Book an Appointment</Link>
+                <Link href="/auth/login">Book an Appointment</Link>
               </Button>
             </motion.div>
           </motion.div>
@@ -226,7 +226,7 @@ export default function HomePage() {
       />
     </div>
       </div>
-    </section>
+      </section>
 
       {/* Auto-Scrolling Departments */}
       <section className="w-full py-20 px-4 bg-muted/50">
