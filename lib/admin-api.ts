@@ -10,7 +10,7 @@ const getApiUrl = () => {
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
     (typeof window !== "undefined" && window.location.hostname === "localhost" 
       ? "http://localhost:8000/api/v1"
-      : "https://appoinment-backend-gy1s.onrender.com/api/v1")
+      : "https://appoinment-backend-5oxs.onrender.com/api/v1")
   
   // If the URL doesn't end with /api/v1, append it
   if (!baseUrl.includes("/api/v1")) {
