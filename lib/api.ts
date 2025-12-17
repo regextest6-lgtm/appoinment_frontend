@@ -1,7 +1,7 @@
 // Ensure API_URL always has the /api/v1 prefix
 const getApiUrl = () => {
   // Production: Use Render backend
-  // Development: Use localhost
+  // Development: Use localhost or Render backend
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 
     (typeof window !== "undefined" && window.location.hostname === "localhost" 
       ? "http://localhost:8000/api/v1"
@@ -222,45 +222,6 @@ export async function loginPatient(data: {
   }
 }
 
-export async function loginDoctor(data: {
-  phone: string
-  password: string
-}): Promise<LoginResponse> {
-  try {
-    // Truncate password to 72 bytes (bcrypt limit)
-    const truncatedPassword = data.password.substring(0, 72)
-    
-    return await apiCall<LoginResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify({
-        ...data,
-        password: truncatedPassword,
-      }),
-    })
-  } catch (error) {
-    throw new Error("Login failed. Please ensure the backend server is running.")
-  }
-}
-
-export async function loginAdmin(data: {
-  phone: string
-  password: string
-}): Promise<LoginResponse> {
-  try {
-    // Truncate password to 72 bytes (bcrypt limit)
-    const truncatedPassword = data.password.substring(0, 72)
-    
-    return await apiCall<LoginResponse>("/auth/login", {
-      method: "POST",
-      body: JSON.stringify({
-        ...data,
-        password: truncatedPassword,
-      }),
-    })
-  } catch (error) {
-    throw new Error("Login failed. Please ensure the backend server is running.")
-  }
-}
 
 export async function refreshToken(refreshToken: string) {
   try {

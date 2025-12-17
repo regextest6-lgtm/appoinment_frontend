@@ -40,16 +40,10 @@ export function Navbar() {
   }
 
   const getDashboardLink = () => {
-    switch (userType) {
-      case "patient":
-        return "/dashboard/patient"
-      case "doctor":
-        return "/dashboard/doctor"
-      case "admin":
-        return "/dashboard/admin"
-      default:
-        return "/"
+    if (userType === "patient") {
+      return "/dashboard/patient"
     }
+    return "/"
   }
 
   return (

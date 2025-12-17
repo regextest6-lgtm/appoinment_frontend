@@ -17,10 +17,10 @@ export interface AuthContextType {
   user: User | null
   token: string | null
   refreshToken: string | null
-  userType: "patient" | "doctor" | "admin" | null
+  userType: "patient" | null
   isLoading: boolean
   isAuthenticated: boolean
-  login: (user: User, token: string, refreshToken: string, type: "patient" | "doctor" | "admin") => void
+  login: (user: User, token: string, refreshToken: string, type: "patient") => void
   logout: () => void
   setUser: (user: User | null) => void
 }
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [refreshToken, setRefreshToken] = useState<string | null>(null)
-  const [userType, setUserType] = useState<"patient" | "doctor" | "admin" | null>(null)
+  const [userType, setUserType] = useState<"patient" | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   // Load auth from localStorage on mount
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedToken = localStorage.getItem("auth_token")
     const storedRefreshToken = localStorage.getItem("refresh_token")
     const storedUser = localStorage.getItem("auth_user")
-    const storedUserType = localStorage.getItem("user_type") as "patient" | "doctor" | "admin" | null
+    const storedUserType = localStorage.getItem("user_type") as "patient" | null
 
     if (storedToken && storedUser) {
       setToken(storedToken)
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userData: User,
     authToken: string,
     authRefreshToken: string,
-    type: "patient" | "doctor" | "admin"
+    type: "patient"
   ) => {
     setUser(userData)
     setToken(authToken)

@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
@@ -11,48 +12,71 @@ import { Footer } from "@/components/footer"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Mail, Phone, Search } from "lucide-react"
-import { getDoctors } from "@/lib/api"
+import { getDoctors, getDepartments, getDoctorsByDepartment } from "@/lib/api"
 
 interface Doctor {
   id: number
-  user: {
-    full_name: string
-    phone?: string
-    email?: string
-  }
+  name: string
+  email?: string
+  phone?: string
   specialty: string
-  degrees?: string
-  schedule_day?: string
-  schedule_time?: string
+  department_id: number
   bio?: string
   image_url?: string
-  years_of_experience?: number
+  experience_years?: number
+  is_available: boolean
+  is_active: boolean
+  profile_data?: {
+    degrees?: string[]
+    workplace?: string
+    visiting_schedule?: Array<{ day: string; time: string }>
+    treats?: string[]
+  }
+  created_at: string
+  updated_at: string
 }
 
 export default function DoctorsPage() {
+  const searchParams = useSearchParams()
+  const deptParam = searchParams.get("dept")
+  
   const [doctors, setDoctors] = useState<Doctor[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedDepartment, setSelectedDepartment] = useState("")
+  const [selectedDepartment, setSelectedDepartment] = useState(deptParam || "")
   const [doctorName, setDoctorName] = useState("")
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([])
-  const [departments, setDepartments] = useState<string[]>([])
+  const [departments, setDepartments] = useState<{ id: number; name: string }[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const doctorsData = await getDoctors()
-      console.log(doctorsData);
+        let doctorsData: Doctor[] = []
+        
+        // If dept parameter is provided, fetch doctors for that department
+        if (deptParam) {
+          console.log("Fetching doctors for department:", deptParam)
+          const deptDoctorsData = await getDoctorsByDepartment(parseInt(deptParam)) as Doctor[]
+          doctorsData = Array.isArray(deptDoctorsData) ? deptDoctorsData : []
+        } else {
+          // Otherwise fetch all doctors
+          const allDoctorsData = await getDoctors()
+          doctorsData = Array.isArray(allDoctorsData) ? allDoctorsData : []
+        }
+        
+        console.log("Doctors data:", doctorsData)
+        
         // Filter out doctors with invalid data structure
-        const validDoctors = (doctorsData || []).filter(
-          (d) => d && d.user && d.user.full_name
-        )
+        const validDoctors = doctorsData.filter(
+          (d: Doctor) => d && d.name && d.id
+        ) as Doctor[]
 
         setDoctors(validDoctors)
 
-        console.log(validDoctors);
-        // Extract unique specialties from valid doctors
-        const uniqueSpecialties = [...new Set(validDoctors.map((d: Doctor) => d.specialty))]
-        setDepartments(uniqueSpecialties as string[])
+        // Fetch departments
+        const departmentsData = await getDepartments()
+        if (departmentsData && Array.isArray(departmentsData)) {
+          setDepartments(departmentsData as { id: number; name: string }[])
+        }
       } catch (error) {
         console.error("Error fetching data:", error)
         setDoctors([])
@@ -63,19 +87,19 @@ export default function DoctorsPage() {
     }
 
     fetchData()
-  }, [])
+  }, [deptParam])
 
   const handleSearch = () => {
     let results = doctors
 
     // Filter by department if selected
     if (selectedDepartment) {
-      results = results.filter((d) => d.specialty === selectedDepartment)
+      results = results.filter((d) => d.department_id === parseInt(selectedDepartment))
     }
 
     // Filter by doctor name if provided
     if (doctorName.trim()) {
-      results = results.filter((d) => d.user.full_name.toLowerCase().includes(doctorName.toLowerCase()))
+      results = results.filter((d) => d.name.toLowerCase().includes(doctorName.toLowerCase()))
     }
 
     setFilteredDoctors(results)
@@ -87,12 +111,24 @@ export default function DoctorsPage() {
     }
   }
 
-  // Initial load - show all doctors
+  // Update filtered doctors when doctors or selectedDepartment changes
   useEffect(() => {
     if (doctors.length > 0) {
-      setFilteredDoctors(doctors)
+      let results = doctors
+
+      // Filter by department if selected
+      if (selectedDepartment) {
+        results = results.filter((d) => d.department_id === parseInt(selectedDepartment))
+      }
+
+      // Filter by doctor name if provided
+      if (doctorName.trim()) {
+        results = results.filter((d) => d.name.toLowerCase().includes(doctorName.toLowerCase()))
+      }
+
+      setFilteredDoctors(results)
     }
-  }, [doctors])
+  }, [doctors, selectedDepartment, doctorName])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -139,8 +175,8 @@ export default function DoctorsPage() {
               >
                 <option value="">All Departments</option>
                 {departments.map((dept) => (
-                  <option key={dept} value={dept}>
-                    {dept}
+                  <option key={dept.id} value={dept.id.toString()}>
+                    {dept.name}
                   </option>
                 ))}
               </select>
@@ -195,25 +231,31 @@ export default function DoctorsPage() {
                     <div className="relative h-72 overflow-hidden bg-muted">
                       <Image
                         src={doctor.image_url || "/placeholder.svg"}
-                        alt={doctor.user.full_name}
+                        alt={doctor.name}
                         fill
                         className="object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="font-bold text-xl text-foreground mb-1">{doctor.user.full_name}</h3>
-                      <p className="text-primary font-medium mb-3">{doctor.degrees}</p>
+                      <h3 className="font-bold text-xl text-foreground mb-1">{doctor.name}</h3>
+                      <p className="text-primary font-medium mb-3">
+                        {doctor.profile_data?.degrees?.join(", ") || ""}
+                      </p>
                       <p className="text-primary font-medium mb-3">{doctor.specialty}</p>
                       <p className="text-sm text-muted-foreground mb-4">{doctor.bio || "Experienced healthcare professional"}</p>
                       <div className="space-y-2 mb-4 pb-4 border-b border-border">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Phone size={16} />
-                          <span>{doctor.user.phone || "N/A"}</span>
-                        </div>
-                        {/* <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Mail size={16} />
-                          <span className="truncate">{doctor.user.email || "N/A"}</span>
-                        </div> */}
+                        {doctor.phone && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Phone size={16} />
+                            <span>{doctor.phone}</span>
+                          </div>
+                        )}
+                        {doctor.email && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Mail size={16} />
+                            <span className="truncate">{doctor.email}</span>
+                          </div>
+                        )}
                       </div>
                       <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                         <Link href={`/doctors/${doctor.id}`}>View Details</Link>
