@@ -306,24 +306,26 @@ export default function HomePage() {
                 className="group cursor-pointer"
               >
                 <Link href={`/doctors/${doctor.id}`}>
-                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 py-0">
-                    <div className="relative h-64 overflow-hidden bg-muted">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+                    <div className="relative w-full aspect-square overflow-hidden bg-muted flex-shrink-0">
                       <Image
                         src={doctor.profile_image_url || "/placeholder.svg"}
                         alt={doctor.user.full_name}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={false}
+                        className="object-cover object-top group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
-                    <div className="p-6">
-                      <h3 className="font-bold text-lg text-foreground mb-1">{doctor.user.full_name}</h3>
-                      <p className="text-sm text-primary font-medium mb-3">{doctor.specialty}</p>
-                      <p className="text-xs text-muted-foreground mb-4">
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">{doctor.user.full_name}</h3>
+                      <p className="text-sm text-primary font-semibold mb-2">{doctor.specialty}</p>
+                      <p className="text-xs text-muted-foreground mb-4 flex-grow">
                         {doctor.years_of_experience || 0}+ years of experience
                       </p>
                       <Button
                         size="sm"
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs"
                         onClick={(e) => {
                           e.preventDefault()
                           setShowAppointmentModal(true)

@@ -223,41 +223,57 @@ export default function DoctorsPage() {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {filteredDoctors.map((doctor) => (
                 <motion.div key={doctor.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 py-0">
-                    <div className="relative h-72 overflow-hidden bg-muted">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+                    {/* Image Container - Larger */}
+                    <div className="relative w-full aspect-square overflow-hidden bg-muted flex-shrink-0">
                       <Image
                         src={doctor.image_url || "/placeholder.svg"}
                         alt={doctor.name}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={false}
+                        className="object-cover object-top group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
-                    <div className="p-6">
-                      <h3 className="font-bold text-xl text-foreground mb-1">{doctor.name}</h3>
-                      <p className="text-primary font-medium mb-3">
-                        {doctor.profile_data?.degrees?.join(", ") || ""}
+                    
+                    {/* Content Container */}
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">{doctor.name}</h3>
+                      
+                      {doctor.profile_data?.degrees && doctor.profile_data.degrees.length > 0 && (
+                        <p className="text-sm text-primary font-medium mb-2 line-clamp-1">
+                          {doctor.profile_data.degrees.join(", ")}
+                        </p>
+                      )}
+                      
+                      <p className="text-sm font-semibold text-primary mb-3">{doctor.specialty}</p>
+                      
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-grow">
+                        {doctor.bio || "Experienced healthcare professional"}
                       </p>
-                      <p className="text-primary font-medium mb-3">{doctor.specialty}</p>
-                      <p className="text-sm text-muted-foreground mb-4">{doctor.bio || "Experienced healthcare professional"}</p>
+                      
+                      {/* Contact Info */}
                       <div className="space-y-2 mb-4 pb-4 border-b border-border">
                         {doctor.phone && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Phone size={16} />
-                            <span>{doctor.phone}</span>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Phone size={14} className="flex-shrink-0" />
+                            <span className="truncate">{doctor.phone}</span>
                           </div>
                         )}
                         {doctor.email && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Mail size={16} />
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Mail size={14} className="flex-shrink-0" />
                             <span className="truncate">{doctor.email}</span>
                           </div>
                         )}
                       </div>
-                      <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                      
+                      {/* Button */}
+                      <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-sm">
                         <Link href={`/doctors/${doctor.id}`}>View Details</Link>
                       </Button>
                     </div>
