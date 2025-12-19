@@ -64,7 +64,7 @@ export default function PatientDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-foreground mb-2">Welcome, {user.full_name || "Patient"}</h1>
-              <p className="text-muted-foreground">Manage your appointments and health records</p>
+              <p className="text-muted-foreground">Manage your appointments here.</p>
             </div>
             <Button
               onClick={handleLogout}
