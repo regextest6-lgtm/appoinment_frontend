@@ -111,18 +111,6 @@ export default function PatientDashboard() {
                 </div>
               </Card>
             </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <Card className="p-6 border-0 shadow-lg hover:shadow-xl transition-shadow">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-muted-foreground text-sm mb-1">Medical Records</p>
-                    <p className="text-3xl font-bold text-foreground">3</p>
-                  </div>
-                  <FileText className="w-12 h-12 text-blue-500/20" />
-                </div>
-              </Card>
-            </motion.div>
           </motion.div>
 
           {/* Main Actions */}
@@ -162,22 +150,6 @@ export default function PatientDashboard() {
                 </div>
                 <Button variant="outline" className="w-full">
                   View Appointments
-                </Button>
-              </Card>
-            </motion.div>
-
-            {/* Medical Records */}
-            <motion.div variants={itemVariants}>
-              <Card className="p-8 border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-primary/5">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-2xl font-bold text-foreground mb-2">Medical Records</h3>
-                    <p className="text-muted-foreground">Access your health records and documents</p>
-                  </div>
-                  <FileText className="w-8 h-8 text-primary" />
-                </div>
-                <Button variant="outline" className="w-full">
-                  View Records
                 </Button>
               </Card>
             </motion.div>

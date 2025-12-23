@@ -223,25 +223,25 @@ export default function DoctorsPage() {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
             >
               {filteredDoctors.map((doctor) => (
-                <motion.div key={doctor.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+                <motion.div key={doctor.id} variants={itemVariants} whileHover={{ y: -8 }} className="group cursor-pointer">
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col py-0">
                     {/* Image Container - Larger */}
-                    <div className="relative w-full aspect-square overflow-hidden bg-muted flex-shrink-0">
+                    <div className="relative w-full aspect-square overflow-hidden bg-muted shrink-0">
                       <Image
                         src={doctor.image_url || "/placeholder.svg"}
                         alt={doctor.name}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        sizes="(max-width: 768px) 80vw, (max-width: 1200px) 40vw, 25vw"
                         priority={false}
-                        className="object-cover object-top group-hover:scale-110 transition-transform duration-300"
+                        className="mt-4 object-cover object-top group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                     
                     {/* Content Container */}
-                    <div className="p-6 flex flex-col flex-grow">
+                    <div className="p-6 flex flex-col grow">
                       <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">{doctor.name}</h3>
                       
                       {doctor.profile_data?.degrees && doctor.profile_data.degrees.length > 0 && (
@@ -252,7 +252,7 @@ export default function DoctorsPage() {
                       
                       <p className="text-sm font-semibold text-primary mb-3">{doctor.specialty}</p>
                       
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-grow">
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 grow">
                         {doctor.bio || "Experienced healthcare professional"}
                       </p>
                       

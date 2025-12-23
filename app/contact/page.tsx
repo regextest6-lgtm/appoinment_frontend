@@ -57,12 +57,12 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       <Navbar />
 
       {/* Header */}
       <section className="w-full py-16 px-4 bg-linear-to-r from-primary/10 to-accent/10">
-        <div className="container mx-auto text-center">
+        <div className="w-full mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -75,7 +75,7 @@ export default function ContactPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="w-5xl mx-auto py-20 px-4 flex-1">
+      <section className="w-full max-w-5xl mx-auto py-20 px-4 flex-1">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20">
             {/* Contact Info Cards */}
@@ -86,9 +86,9 @@ export default function ContactPage() {
               className="lg:col-span-1 space-y-6"
             >
               {[
-                { icon: Phone, label: "Hot Line", value: "(+880)1312-666677)\n(+880)1312-666688)\n(+880)1312-666699)" },
+                { icon: Phone, label: "Hot Line", value: "+8801312-666677\n+8801312-666688\n+8801312-666699" },
                 { icon: Mail, label: "Email", value: "nazmulmodernhospital@gmail.com" },
-                { icon: MapPin, label: "Address", value: "Moni Mukta Jhumka Complex Comilla, Daudkandi Bridge Toll Plaza, Daudkandi" },
+                { icon: MapPin, label: "Address", value: "Moni-Mukta O Jhumka Complex Comilla, Daudkandi Toll Plaza, Daudkandi" },
               ].map((contact, idx) => (
                 <motion.div
                   key={idx}

@@ -16,11 +16,12 @@ export function Navbar() {
   // Public links - always visible
   const publicNavLinks = [
     { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
+    { href: "/about", label: "About Us" },
     { href: "/doctors", label: "Doctors List" },
     { href: "/departments", label: "Departments" },
-    { href: "/services", label: "Services" },
-    { href: "/contact", label: "Contact" },
+    { href: "/services", label: "Our Services" },
+    { href: "/gallery", label: "Gallery" },
+    { href: "/contact", label: "Contact Us" },
   ]
 
   // Protected links - only visible when logged in

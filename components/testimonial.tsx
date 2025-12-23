@@ -59,7 +59,7 @@ export default function TestimonialSection() {
             TESTIMONIALS
           </span>
 
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mt-3">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mt-3">
             Great Patient Stories
           </h2>
 
@@ -170,7 +170,7 @@ export default function TestimonialSection() {
                 transition: { duration: 0.3 }
               }}
             >
-              <p className="text-gray-600 leading-relaxed text-lg">
+              <p className="text-gray-600 leading-relaxed">
                 {currentTestimonial.content}
               </p>
 

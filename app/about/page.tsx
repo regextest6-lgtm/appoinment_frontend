@@ -32,7 +32,7 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="w-full py-16 px-4 bg-gradient-to-r from-primary/10 to-accent/10">
+      <section className="w-full py-16 px-4 bg-linear-to-r from-primary/10 to-accent/10">
         <div className="container mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">About HealthCare Hospital</h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

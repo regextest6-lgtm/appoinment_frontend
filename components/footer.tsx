@@ -65,10 +65,10 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Contact Info</h4>
             <p className="text-sm text-muted-foreground mb-2">
-              <span className="font-medium text-foreground">Phone:</span> (555) 123-4567
+              <span className="font-medium text-foreground">Phone:</span> +8801312-666677
             </p>
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Email:</span> info@healthcare.com
+              <span className="font-medium text-foreground">Email:</span> nazmulmodernhospital@gmail.com
             </p>
           </div>
         </div>

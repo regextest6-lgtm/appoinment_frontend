@@ -90,11 +90,13 @@ export default function AppointmentPage() {
       try {
         const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        setDepartments(deptData || [])
+        setDepartments(Array.isArray(deptData) ? deptData : [])
         // Filter out doctors with invalid data structure
-        const validDoctors = (doctorData || []).filter(
-          (d) => d && d.user && d.user.full_name
-        )
+        const validDoctors = Array.isArray(doctorData)
+          ? doctorData.filter(
+              (d: Doctor) => d && d.user && d.user.full_name
+            )
+          : []
         setAllDoctors(validDoctors)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -156,7 +158,7 @@ export default function AppointmentPage() {
       <Navbar />
 
       {/* Header */}
-      <section className="w-full py-16 px-4 bg-gradient-to-r from-primary/10 to-accent/10">
+      <section className="w-full py-16 px-4 bg-linear-to-r from-primary/10 to-accent/10">
         <div className="container mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
@@ -211,7 +213,7 @@ export default function AppointmentPage() {
 
                   {/* Patient Email */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                    <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                       <Mail size={16} /> Email
                     </label>
                     <Input
@@ -291,7 +293,7 @@ export default function AppointmentPage() {
 
                   {/* Date */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                    <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                       <Calendar size={16} /> Date
                     </label>
                     <Input
@@ -306,7 +308,7 @@ export default function AppointmentPage() {
 
                   {/* Time */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                    <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                       <Clock size={16} /> Time
                     </label>
                     <Input
@@ -321,7 +323,7 @@ export default function AppointmentPage() {
 
                   {/* Additional Notes */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                    <label className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                       <FileText size={16} /> Additional Notes (Optional)
                     </label>
                     <textarea
