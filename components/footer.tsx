@@ -1,12 +1,12 @@
-"use client"
+'use client';
 
-import Link from "next/link"
+import Link from 'next/link';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-border bg-muted/50">
+    <footer className="w-full border-t border-border bg-linear-to-br from-primary/80 to-blue-200 dark:from-blue-950/20 dark:via-blue-900/10 dark:to-sky-950/20">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* About */}
@@ -22,17 +22,26 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-foreground">Quick Links</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/about"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/doctors" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/doctors"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   Our Doctors
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/services"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   Services
                 </Link>
               </li>
@@ -44,17 +53,26 @@ export function Footer() {
             <h4 className="font-semibold mb-4 text-foreground">Services</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/departments" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/departments"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   Departments
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/contact"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/appointment" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  href="/appointment"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                >
                   Book Appointment
                 </Link>
               </li>
@@ -68,23 +86,32 @@ export function Footer() {
               <span className="font-medium text-foreground">Phone:</span> +8801312-666677
             </p>
             <p className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">Email:</span> nazmulmodernhospital@gmail.com
+              <span className="font-medium text-foreground">Email:</span>{' '}
+              nazmulmodernhospital@gmail.com
             </p>
           </div>
         </div>
 
         <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">© {currentYear} Nazmul Modern Hospital. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">
+            © {currentYear} Nazmul Modern Hospital. All rights reserved.
+          </p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
               Privacy Policy
             </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-primary transition-colors"
+            >
               Terms of Service
             </Link>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

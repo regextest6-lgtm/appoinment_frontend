@@ -21,6 +21,7 @@ import { useAuth } from '@/lib/auth-context';
 import TestimonialSection from '@/components/testimonial';
 import Blogs from '@/components/blogs';
 import FacilitiesSection from '@/components/services';
+import TestPackages from '@/components/test-packages';
 
 interface Department {
   id: number;
@@ -125,7 +126,7 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <section
-        className="w-full min-h-screen flex items-center justify-center relative"
+        className="w-full min-h-[80vh] flex items-center justify-center relative"
         style={{
           backgroundImage: 'url("/bg_img.jpg")',
           backgroundSize: 'cover',
@@ -171,8 +172,8 @@ export default function HomePage() {
           >
             {[
               { icon: Heart, label: 'Patients Served', value: '10,000+' },
-              { icon: Users, label: 'Expert Doctors', value: '150+' },
-              { icon: Award, label: 'Years Experience', value: '25+' },
+              { icon: Users, label: 'Expert Doctors', value: '20+' },
+              { icon: Award, label: 'Years Experience', value: '15+' },
               { icon: Clock, label: 'Emergency Ambulance', value: 'Always' },
             ].map((stat, idx) => (
               <motion.div
@@ -336,7 +337,7 @@ export default function HomePage() {
               >
                 <Link href={`/doctors/${doctor.id}`}>
                   <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col">
-                    <div className="relative w-full aspect-square overflow-hidden bg-muted flex-shrink-0">
+                    <div className="relative w-full aspect-square overflow-hidden bg-muted shrink-0">
                       <Image
                         src={doctor.profile_image_url || '/placeholder.svg'}
                         alt={doctor.user.full_name}
@@ -346,12 +347,12 @@ export default function HomePage() {
                         className="object-cover object-top group-hover:scale-110 transition-transform duration-300"
                       />
                     </div>
-                    <div className="p-6 flex flex-col flex-grow">
+                    <div className="p-6 flex flex-col grow">
                       <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">
                         {doctor.user.full_name}
                       </h3>
                       <p className="text-sm text-primary font-semibold mb-2">{doctor.specialty}</p>
-                      <p className="text-xs text-muted-foreground mb-4 flex-grow">
+                      <p className="text-xs text-muted-foreground mb-4 grow">
                         {doctor.years_of_experience || 0}+ years of experience
                       </p>
                       <Button
@@ -493,6 +494,9 @@ export default function HomePage() {
 
       {/* Services Section */}
       <FacilitiesSection />
+
+      {/* Test Packages Section */}
+      <TestPackages />
 
       {/* Blog Section */}
       <Blogs />
