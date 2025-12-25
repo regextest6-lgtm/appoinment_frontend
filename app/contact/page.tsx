@@ -88,7 +88,7 @@ export default function ContactPage() {
               {[
                 { icon: Phone, label: "Hot Line", value: "+8801312-666677\n+8801312-666688\n+8801312-666699" },
                 { icon: Mail, label: "Email", value: "nazmulmodernhospital@gmail.com" },
-                { icon: MapPin, label: "Address", value: "Moni-Mukta O Jhumka Complex Comilla, Daudkandi Toll Plaza, Daudkandi" },
+                { icon: MapPin, label: "Address", value: "Moni-Mukta & Jhumka Complex, Daudkandi Toll Plaza, Daudkandi, Cumilla" },
               ].map((contact, idx) => (
                 <motion.div
                   key={idx}
@@ -183,6 +183,56 @@ export default function ContactPage() {
               </form>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Google Map Section */}
+      <section className="w-full py-12 px-4 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-8"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Find Us</h2>
+            <p className="text-muted-foreground">Visit us at our location</p>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="w-full rounded-lg overflow-hidden shadow-lg"
+          >
+            <div className="relative w-full h-[400px] md:h-[500px]">
+              <iframe
+                src={`https://www.google.com/maps?q=${encodeURIComponent(
+                  'Moni-Mukta O Jhumka Complex Comilla, Daudkandi Toll Plaza, Daudkandi'
+                )}&output=embed`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                className="w-full h-full"
+                title="Nazmul Modern Hospital Location"
+              />
+            </div>
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mt-6 text-center"
+          >
+            <p className="text-sm text-muted-foreground">
+              <MapPin className="inline w-4 h-4 mr-1 text-red-600" />
+              Moni-Mukta & Jhumka Complex Comilla, Daudkandi Toll Plaza, Daudkandi
+            </p>
+          </motion.div>
         </div>
       </section>
 
