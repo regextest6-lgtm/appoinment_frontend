@@ -1,59 +1,59 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { motion } from "framer-motion"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Calendar, Clock, Mail, FileText } from "lucide-react"
-import { getDepartments, getDoctors, createAppointment } from "@/lib/api"
-import { useAuth } from "@/lib/auth-context"
+import { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { motion } from 'framer-motion';
+import { Navbar } from '@/components/navbar';
+import { Footer } from '@/components/footer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Calendar, Clock, Mail, FileText, MapPin, Phone, Facebook } from 'lucide-react';
+import { getDepartments, getDoctors, createAppointment } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
 
 interface Doctor {
-  id: number
+  id: number;
   user: {
-    full_name: string
-  }
-  specialty: string
-  department_id: number
+    full_name: string;
+  };
+  specialty: string;
+  department_id: number;
 }
 
 interface Department {
-  id: number
-  name: string
+  id: number;
+  name: string;
 }
 
 interface AppointmentFormData {
-  patientName: string
-  patientEmail: string
-  patientPhone: string
-  departmentId: string
-  doctorId: string
-  appointmentDate: string
-  appointmentTime: string
-  notes: string
+  patientName: string;
+  patientEmail: string;
+  patientPhone: string;
+  departmentId: string;
+  doctorId: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  notes: string;
 }
 
 export default function AppointmentPage() {
-  const router = useRouter()
-  const { isAuthenticated, isLoading } = useAuth()
-  const searchParams = useSearchParams()
-  const doctorIdParam = searchParams.get("doctorId")
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [allDoctors, setAllDoctors] = useState<Doctor[]>([])
-  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitMessage, setSubmitMessage] = useState("")
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
+  const searchParams = useSearchParams();
+  const doctorIdParam = searchParams.get('doctorId');
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [allDoctors, setAllDoctors] = useState<Doctor[]>([]);
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState('');
 
   // Check authentication on mount
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push("/auth/login")
+      router.push('/auth/login');
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isLoading, router]);
 
   const {
     register,
@@ -63,56 +63,56 @@ export default function AppointmentPage() {
     watch,
   } = useForm<AppointmentFormData>({
     defaultValues: {
-      patientName: "",
-      patientEmail: "",
-      patientPhone: "",
-      departmentId: "",
-      doctorId: doctorIdParam || "",
-      appointmentDate: "",
-      appointmentTime: "",
-      notes: "",
+      patientName: '',
+      patientEmail: '',
+      patientPhone: '',
+      departmentId: '',
+      doctorId: doctorIdParam || '',
+      appointmentDate: '',
+      appointmentTime: '',
+      notes: '',
     },
-  })
+  });
 
-  const selectedDepartmentId = watch("departmentId")
+  const selectedDepartmentId = watch('departmentId');
 
   useEffect(() => {
     if (selectedDepartmentId) {
-      const filtered = allDoctors.filter((doc) => doc.department_id === Number.parseInt(selectedDepartmentId))
-      setFilteredDoctors(filtered)
+      const filtered = allDoctors.filter(
+        (doc) => doc.department_id === Number.parseInt(selectedDepartmentId)
+      );
+      setFilteredDoctors(filtered);
     } else {
-      setFilteredDoctors([])
+      setFilteredDoctors([]);
     }
-  }, [selectedDepartmentId, allDoctors])
+  }, [selectedDepartmentId, allDoctors]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
+        const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()]);
 
-        setDepartments(Array.isArray(deptData) ? deptData : [])
+        setDepartments(Array.isArray(deptData) ? deptData : []);
         // Filter out doctors with invalid data structure
         const validDoctors = Array.isArray(doctorData)
-          ? doctorData.filter(
-              (d: Doctor) => d && d.user && d.user.full_name
-            )
-          : []
-        setAllDoctors(validDoctors)
+          ? doctorData.filter((d: Doctor) => d && d.user && d.user.full_name)
+          : [];
+        setAllDoctors(validDoctors);
       } catch (error) {
-        console.error("Error fetching data:", error)
-        setDepartments([])
-        setAllDoctors([])
+        console.error('Error fetching data:', error);
+        setDepartments([]);
+        setAllDoctors([]);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const onSubmit = async (data: AppointmentFormData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      const doctorId = Number.parseInt(data.doctorId)
-      const departmentId = Number.parseInt(data.departmentId)
+      const doctorId = Number.parseInt(data.doctorId);
+      const departmentId = Number.parseInt(data.departmentId);
 
       await createAppointment({
         department_id: departmentId,
@@ -120,17 +120,19 @@ export default function AppointmentPage() {
         appointment_date: data.appointmentDate,
         appointment_time: data.appointmentTime,
         notes: data.notes,
-      })
+      });
 
-      setSubmitMessage("Appointment booked successfully! You will receive a confirmation call shortly.")
-      reset()
-      setTimeout(() => setSubmitMessage(""), 5000)
+      setSubmitMessage(
+        'Appointment booked successfully! You will receive a confirmation call shortly.'
+      );
+      reset();
+      setTimeout(() => setSubmitMessage(''), 5000);
     } catch (error) {
-      setSubmitMessage("Error booking appointment. Please try again.")
+      setSubmitMessage('Error booking appointment. Please try again.');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -145,12 +147,12 @@ export default function AppointmentPage() {
         </section>
         <Footer />
       </div>
-    )
+    );
   }
 
   // Redirect happens in useEffect, but show nothing while redirecting
   if (!isAuthenticated) {
-    return null
+    return null;
   }
 
   return (
@@ -165,29 +167,34 @@ export default function AppointmentPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold text-foreground mb-4"
           >
-            Book an Appointment
+            Book an Online Appointment
           </motion.h1>
-          <p className="text-lg text-muted-foreground">Schedule your medical appointment with our expert doctors</p>
+          <p className="text-lg text-muted-foreground">
+            Schedule your medical appointment with our expert doctors
+          </p>
         </div>
       </section>
 
       {/* Appointment Form */}
       <section className="w-full py-20 px-4 flex-1">
-        <div className="container mx-auto max-w-2xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-card rounded-lg shadow-lg p-8 border border-border"
-          >
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Form */}
+            <div className="lg:col-span-2">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-card rounded-lg shadow-lg p-8 border border-border"
+              >
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {submitMessage && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`p-4 rounded-lg text-sm ${
-                    submitMessage.includes("successfully")
-                      ? "bg-green-100/20 text-green-700 border border-green-200"
-                      : "bg-red-100/20 text-red-700 border border-red-200"
+                    submitMessage.includes('successfully')
+                      ? 'bg-green-100/20 text-green-700 border border-green-200'
+                      : 'bg-red-100/20 text-red-700 border border-red-200'
                   }`}
                 >
                   {submitMessage}
@@ -200,14 +207,18 @@ export default function AppointmentPage() {
                 <div className="space-y-4">
                   {/* Patient Name */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Your Name</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Your Name
+                    </label>
                     <Input
-                      {...register("patientName", { required: "Name is required" })}
+                      {...register('patientName', { required: 'Name is required' })}
                       placeholder="John Doe"
                       className="bg-background border-border"
                     />
                     {errors.patientName && (
-                      <span className="text-red-500 text-xs mt-1">{errors.patientName.message}</span>
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors.patientName.message}
+                      </span>
                     )}
                   </div>
 
@@ -217,11 +228,11 @@ export default function AppointmentPage() {
                       <Mail size={16} /> Email
                     </label>
                     <Input
-                      {...register("patientEmail", {
-                        required: "Email is required",
+                      {...register('patientEmail', {
+                        required: 'Email is required',
                         pattern: {
                           value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Invalid email format",
+                          message: 'Invalid email format',
                         },
                       })}
                       placeholder="john@example.com"
@@ -229,20 +240,26 @@ export default function AppointmentPage() {
                       className="bg-background border-border"
                     />
                     {errors.patientEmail && (
-                      <span className="text-red-500 text-xs mt-1">{errors.patientEmail.message}</span>
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors.patientEmail.message}
+                      </span>
                     )}
                   </div>
 
                   {/* Patient Phone */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Phone Number</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Phone Number
+                    </label>
                     <Input
-                      {...register("patientPhone", { required: "Phone is required" })}
+                      {...register('patientPhone', { required: 'Phone is required' })}
                       placeholder="(555) 123-4567"
                       className="bg-background border-border"
                     />
                     {errors.patientPhone && (
-                      <span className="text-red-500 text-xs mt-1">{errors.patientPhone.message}</span>
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors.patientPhone.message}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -254,9 +271,11 @@ export default function AppointmentPage() {
                 <div className="space-y-4">
                   {/* Department Selection */}
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">Department</label>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Department
+                    </label>
                     <select
-                      {...register("departmentId", { required: "Please select a department" })}
+                      {...register('departmentId', { required: 'Please select a department' })}
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-sm"
                     >
                       <option value="">Select a department...</option>
@@ -267,7 +286,9 @@ export default function AppointmentPage() {
                       ))}
                     </select>
                     {errors.departmentId && (
-                      <span className="text-red-500 text-xs mt-1">{errors.departmentId.message}</span>
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors.departmentId.message}
+                      </span>
                     )}
                   </div>
 
@@ -275,12 +296,12 @@ export default function AppointmentPage() {
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-2">Doctor</label>
                     <select
-                      {...register("doctorId", { required: "Please select a doctor" })}
+                      {...register('doctorId', { required: 'Please select a doctor' })}
                       disabled={!selectedDepartmentId}
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-sm disabled:opacity-50"
                     >
                       <option value="">
-                        {selectedDepartmentId ? "Select a doctor..." : "Select department first"}
+                        {selectedDepartmentId ? 'Select a doctor...' : 'Select department first'}
                       </option>
                       {filteredDoctors.map((doc) => (
                         <option key={doc.id} value={doc.id}>
@@ -288,7 +309,9 @@ export default function AppointmentPage() {
                         </option>
                       ))}
                     </select>
-                    {errors.doctorId && <span className="text-red-500 text-xs mt-1">{errors.doctorId.message}</span>}
+                    {errors.doctorId && (
+                      <span className="text-red-500 text-xs mt-1">{errors.doctorId.message}</span>
+                    )}
                   </div>
 
                   {/* Date */}
@@ -297,12 +320,14 @@ export default function AppointmentPage() {
                       <Calendar size={16} /> Date
                     </label>
                     <Input
-                      {...register("appointmentDate", { required: "Date is required" })}
+                      {...register('appointmentDate', { required: 'Date is required' })}
                       type="date"
                       className="bg-background border-border"
                     />
                     {errors.appointmentDate && (
-                      <span className="text-red-500 text-xs mt-1">{errors.appointmentDate.message}</span>
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors.appointmentDate.message}
+                      </span>
                     )}
                   </div>
 
@@ -312,12 +337,14 @@ export default function AppointmentPage() {
                       <Clock size={16} /> Time
                     </label>
                     <Input
-                      {...register("appointmentTime", { required: "Time is required" })}
+                      {...register('appointmentTime', { required: 'Time is required' })}
                       type="time"
                       className="bg-background border-border"
                     />
                     {errors.appointmentTime && (
-                      <span className="text-red-500 text-xs mt-1">{errors.appointmentTime.message}</span>
+                      <span className="text-red-500 text-xs mt-1">
+                        {errors.appointmentTime.message}
+                      </span>
                     )}
                   </div>
 
@@ -327,7 +354,7 @@ export default function AppointmentPage() {
                       <FileText size={16} /> Additional Notes (Optional)
                     </label>
                     <textarea
-                      {...register("notes")}
+                      {...register('notes')}
                       placeholder="Any specific concerns or medical history to mention..."
                       className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-sm"
                       rows={3}
@@ -341,14 +368,93 @@ export default function AppointmentPage() {
                 disabled={isSubmitting}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 text-base font-medium"
               >
-                {isSubmitting ? "Booking..." : "Confirm Appointment"}
+                {isSubmitting ? 'Booking...' : 'Confirm Appointment'}
               </Button>
             </form>
           </motion.div>
+            </div>
+
+            {/* Sidebar */}
+            <div className="lg:col-span-1">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="bg-card rounded-lg shadow-lg p-6 border border-border sticky top-8"
+              >
+                <h3 className="text-xl font-bold text-foreground mb-6 pb-4 border-b border-border">
+                  Contact Information
+                </h3>
+                
+                <div className="space-y-5">
+                  {/* Medical Name */}
+                  <div>
+                    <h4 className="font-semibold text-foreground mb-2 text-lg">
+                      Nazmul Modern Hospital
+                    </h4>
+                  </div>
+
+                  {/* Address */}
+                  <div className="flex gap-3">
+                    <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Moni-Mukta & Jhumka Complex Comilla, Daudkandi Toll Plaza, Daudkandi
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Contact Number */}
+                  <div className="flex gap-3">
+                    <Phone className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-foreground font-medium">
+                        +8801312-666677
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        +8801312-666688
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        +8801312-666699
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Email */}
+                  <div className="flex gap-3">
+                    <Mail className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <a 
+                        href="mailto:nazmulmodernhospital@gmail.com"
+                        className="text-sm text-foreground hover:text-primary transition-colors break-all"
+                      >
+                        nazmulmodernhospital@gmail.com
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Facebook Link */}
+                  <div className="flex gap-3 pt-2">
+                    <Facebook className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <a 
+                        href="https://www.facebook.com/nazmulmodernhospital"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-foreground hover:text-primary transition-colors"
+                      >
+                        Follow us on Facebook
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
       <Footer />
     </div>
-  )
+  );
 }
