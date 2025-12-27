@@ -45,7 +45,7 @@ export interface LoginResponse {
   user: User
   access_token: string
   refresh_token: string
-  token_type?: string
+  token_type: string
 }
 
 export async function apiCall<T>(
@@ -81,25 +81,57 @@ export async function apiCall<T>(
 }
 
 // Departments
-export async function getDepartments() {
-  return apiCall("/departments")
+export interface DepartmentResponse {
+  id: number
+  name: string
+  description: string
+  image_url?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
 }
 
-export async function getDepartmentById(id: number) {
-  return apiCall(`/departments/${id}`)
+export async function getDepartments(): Promise<DepartmentResponse[]> {
+  return apiCall<DepartmentResponse[]>("/departments")
+}
+
+export async function getDepartmentById(id: number): Promise<DepartmentResponse> {
+  return apiCall<DepartmentResponse>(`/departments/${id}`)
 }
 
 // Doctors
-export async function getDoctors() {
-  return apiCall("/doctors")
+export interface DoctorResponse {
+  id: number
+  name: string
+  email?: string
+  phone?: string
+  specialty: string
+  department_id: number
+  bio?: string
+  image_url?: string
+  experience_years?: number
+  is_available: boolean
+  is_active: boolean
+  profile_data?: {
+    degrees?: string[]
+    workplace?: string
+    visiting_schedule?: Array<{ day: string; time: string }>
+    treats?: string[]
+  }
+  created_at: string
+  updated_at: string
 }
 
-export async function getDoctorById(id: number) {
-  return apiCall(`/doctors/${id}`)
+export async function getDoctors(): Promise<DoctorResponse[]> {
+  return apiCall<DoctorResponse[]>("/doctors")
 }
 
-export async function getDoctorsByDepartment(departmentId: number) {
-  return apiCall(`/doctors/department/${departmentId}`)
+export async function getDoctorById(id: number): Promise<DoctorResponse> {
+  return apiCall<DoctorResponse>(`/doctors/${id}`)
+}
+
+export async function getDoctorsByDepartment(departmentId: number): Promise<DoctorResponse[]> {
+  return apiCall<DoctorResponse[]>(`/doctors/department/${departmentId}`)
 }
 
 // Services
@@ -185,12 +217,12 @@ export async function registerPatient(data: {
   address?: string
   emergency_contact_name?: string
   emergency_contact_phone?: string
-}) {
+}): Promise<LoginResponse> {
   try {
     // Truncate password to 72 bytes (bcrypt limit)
     const truncatedPassword = data.password.substring(0, 72)
     
-    return await apiCall("/auth/register", {
+    return await apiCall<LoginResponse>("/auth/register", {
       method: "POST",
       body: JSON.stringify({
         ...data,

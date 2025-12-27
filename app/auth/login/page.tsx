@@ -11,8 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/lib/auth-context"
 import { loginPatient } from "@/lib/api"
-import { Phone, Lock, AlertCircle } from "lucide-react"
-import { TestCredentials } from "@/components/test-credentials"
+import { Phone, Lock, AlertCircle, Eye, EyeOff } from "lucide-react"
 
 interface LoginFormData {
   phone: string
@@ -25,6 +24,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState("")
   const [messageType, setMessageType] = useState<"success" | "error">("success")
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -71,10 +71,10 @@ export default function LoginPage() {
             {/* Header */}
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mb-4">
-                <span className="text-2xl">👤</span>
+                <span className="text-2xl">🏥</span>
               </div>
               <h1 className="text-3xl font-bold text-foreground mb-2">Patient Login</h1>
-              <p className="text-muted-foreground">Access your healthcare account</p>
+              <p className="text-muted-foreground">Sign in to your healthcare account</p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -100,7 +100,7 @@ export default function LoginPage() {
                 </label>
                 <Input
                   {...register("phone", { required: "Phone number is required" })}
-                  placeholder="+1234567890"
+                  placeholder="01700000000"
                   className="bg-background border-border"
                 />
                 {errors.phone && (
@@ -113,12 +113,21 @@ export default function LoginPage() {
                 <label className="block text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                   <Lock size={16} /> Password
                 </label>
-                <Input
-                  {...register("password", { required: "Password is required" })}
-                  placeholder="••••••••"
-                  type="password"
-                  className="bg-background border-border"
-                />
+                <div className="relative">
+                  <Input
+                    {...register("password", { required: "Password is required" })}
+                    placeholder="Enter your password"
+                    type={showPassword ? "text" : "password"}
+                    className="bg-background border-border pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.password && (
                   <span className="text-red-500 text-xs mt-1">{errors.password.message}</span>
                 )}
@@ -129,7 +138,7 @@ export default function LoginPage() {
                 disabled={isSubmitting}
                 className="w-full py-2 font-medium text-white bg-primary hover:bg-primary/90"
               >
-                {isSubmitting ? "Logging in..." : "Login"}
+                {isSubmitting ? "Signing in..." : "Sign In"}
               </Button>
             </form>
 
@@ -146,7 +155,6 @@ export default function LoginPage() {
       </section>
 
       <Footer />
-      <TestCredentials />
     </div>
   )
 }

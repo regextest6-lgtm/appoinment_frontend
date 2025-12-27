@@ -121,7 +121,7 @@ export default function RegisterPage() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-card rounded-lg shadow-lg p-8 border border-border"
           >
-            <h1 className="text-3xl font-bold text-foreground mb-6 text-center">Register</h1>
+            <h1 className="text-3xl font-bold text-foreground mb-6 text-center">Create Account</h1>
 
             {submitMessage && (
               <motion.div
@@ -168,7 +168,7 @@ export default function RegisterPage() {
                     </label>
                     <Input
                       {...register("full_name")}
-                      placeholder="John Doe"
+                      placeholder="Enter your name"
                       className="bg-background border-border"
                     />
                     {errors.full_name && <span className="text-red-500 text-xs mt-1">{errors.full_name.message}</span>}
@@ -185,7 +185,7 @@ export default function RegisterPage() {
                           message: "Invalid email format",
                         },
                       })}
-                      placeholder="john@example.com"
+                      placeholder="email@example.com"
                       type="email"
                       className="bg-background border-border"
                     />
@@ -198,7 +198,7 @@ export default function RegisterPage() {
                     </label>
                     <Input
                       {...register("phone", { required: "Phone number is required" })}
-                      placeholder="+1234567890"
+                      placeholder="01700000000"
                       className="bg-background border-border"
                     />
                     {errors.phone && <span className="text-red-500 text-xs mt-1">{errors.phone.message}</span>}
@@ -410,7 +410,7 @@ export default function RegisterPage() {
                 disabled={isSubmitting}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 font-medium mt-6"
               >
-                {isSubmitting ? "Creating Account..." : "Create Account"}
+                {isSubmitting ? "Creating account..." : "Create Account"}
               </Button>
             </form>
 
@@ -418,7 +418,7 @@ export default function RegisterPage() {
               <p className="text-muted-foreground text-sm">
                 Already have an account?{" "}
                 <Link href="/auth/login" className="text-primary hover:text-primary/80 font-medium">
-                  Login
+                  Sign in here
                 </Link>
               </p>
             </div>

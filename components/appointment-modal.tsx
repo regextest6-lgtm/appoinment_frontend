@@ -11,11 +11,11 @@ import { useAuth } from "@/lib/auth-context"
 
 interface Doctor {
   id: number
-  user: {
-    full_name: string
-  }
+  name: string
   specialty: string
   department_id: number
+  image_url?: string
+  experience_years?: number
 }
 
 interface Department {
@@ -83,11 +83,13 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
       try {
         const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()])
 
-        setDepartments(deptData || [])
+        setDepartments(Array.isArray(deptData) ? deptData : [])
         // Filter out doctors with invalid data structure
-        const validDoctors = (doctorData || []).filter(
-          (doc) => doc && doc.user && doc.user.full_name
+        const validDoctors = (Array.isArray(doctorData) ? doctorData : []).filter(
+          (doc: any) => doc && doc.name && doc.specialty
         )
+        console.log("All doctors fetched:", validDoctors)
+        console.log("Sample doctor:", validDoctors[0])
         setAllDoctors(validDoctors)
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -215,7 +217,7 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
 
         {/* Modal Body */}
         <div className="p-8 pt-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Book Appointment</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">অ্যাপয়েন্টমেন্ট বুক করুন</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {submitMessage && (
@@ -232,10 +234,10 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
 
             {/* Patient Name */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Your Name</label>
+              <label className="block text-sm font-medium text-foreground mb-1">আপনার নাম</label>
               <Input
-                {...register("patientName", { required: "Name is required" })}
-                placeholder="John Doe"
+                {...register("patientName", { required: "নাম প্রয়োজন" })}
+                placeholder="Enter Your Name"
                 className="bg-background border-border"
               />
               {errors.patientName && <span className="text-red-500 text-xs mt-1">{errors.patientName.message}</span>}
@@ -244,17 +246,17 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
             {/* Patient Email */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-                <Mail size={16} /> Email
+                <Mail size={16} /> ইমেইল
               </label>
               <Input
                 {...register("patientEmail", {
-                  required: "Email is required",
+                  required: "ইমেইল প্রয়োজন",
                   pattern: {
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Invalid email format",
+                    message: "অবৈধ ইমেইল ফরম্যাট",
                   },
                 })}
-                placeholder="john@example.com"
+                placeholder="email@example.com"
                 type="email"
                 className="bg-background border-border"
               />
@@ -263,10 +265,10 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
 
             {/* Patient Phone */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Phone Number</label>
+              <label className="block text-sm font-medium text-foreground mb-1">ফোন নম্বর</label>
               <Input
-                {...register("patientPhone", { required: "Phone is required" })}
-                placeholder="(555) 123-4567"
+                {...register("patientPhone", { required: "ফোন নম্বর প্রয়োজন" })}
+                placeholder="01700000000"
                 className="bg-background border-border"
               />
               {errors.patientPhone && <span className="text-red-500 text-xs mt-1">{errors.patientPhone.message}</span>}
@@ -274,12 +276,12 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
 
             {/* Department Selection */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Department</label>
+              <label className="block text-sm font-medium text-foreground mb-1">বিভাগ</label>
               <select
-                {...register("departmentId", { required: "Please select a department" })}
+                {...register("departmentId", { required: "একটি বিভাগ নির্বাচন করুন" })}
                 className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-sm transition-colors hover:border-primary"
               >
-                <option value="">Select a department...</option>
+                <option value="">একটি বিভাগ নির্বাচন করুন...</option>
                 {departments.map((dept) => (
                   <option key={dept.id} value={dept.id}>
                     {dept.name}
@@ -291,29 +293,32 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
 
             {/* Doctor Selection - Filtered by Department */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Doctor</label>
+              <label className="block text-sm font-medium text-foreground mb-1">ডাক্তার ({filteredDoctors.length})</label>
               <select
-                {...register("doctorId", { required: "Please select a doctor" })}
+                {...register("doctorId", { required: "একজন ডাক্তার নির্বাচন করুন" })}
                 disabled={!selectedDepartmentId}
                 className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-sm disabled:opacity-50 transition-colors hover:border-primary"
               >
-                <option value="">{selectedDepartmentId ? "Select a doctor..." : "Select department first"}</option>
+                <option value="">{selectedDepartmentId ? `একজন ডাক্তার নির্বাচন করুন... (${filteredDoctors.length} উপলব্ধ)` : "প্রথমে বিভাগ নির্বাচন করুন"}</option>
                 {filteredDoctors.map((doc) => (
                   <option key={doc.id} value={doc.id}>
-                    {doc.user.full_name}
+                    {doc.name} - {doc.specialty}
                   </option>
                 ))}
               </select>
               {errors.doctorId && <span className="text-red-500 text-xs mt-1">{errors.doctorId.message}</span>}
+              {selectedDepartmentId && filteredDoctors.length === 0 && (
+                <p className="text-yellow-600 text-xs mt-1">এই বিভাগের জন্য কোনো ডাক্তার পাওয়া যায়নি।</p>
+              )}
             </div>
 
             {/* Date */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-                <Calendar size={16} /> Date
+                <Calendar size={16} /> তারিখ
               </label>
               <Input
-                {...register("appointmentDate", { required: "Date is required" })}
+                {...register("appointmentDate", { required: "তারিখ প্রয়োজন" })}
                 type="date"
                 className="bg-background border-border"
               />
@@ -325,10 +330,10 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
             {/* Time */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-                <Clock size={16} /> Time
+                <Clock size={16} /> সময়
               </label>
               <Input
-                {...register("appointmentTime", { required: "Time is required" })}
+                {...register("appointmentTime", { required: "সময় প্রয়োজন" })}
                 type="time"
                 className="bg-background border-border"
               />
@@ -340,11 +345,11 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
             {/* Additional Notes */}
             <div>
               <label className="block text-sm font-medium text-foreground mb-1 flex items-center gap-2">
-                <FileText size={16} /> Additional Notes (Optional)
+                <FileText size={16} /> অতিরিক্ত নোট (ঐচ্ছিক)
               </label>
               <textarea
                 {...register("notes")}
-                placeholder="Any specific concerns or medical history to mention..."
+                placeholder="কোনো নির্দিষ্ট উদ্বেগ বা চিকিৎসা ইতিহাস উল্লেখ করুন..."
                 className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-sm transition-colors hover:border-primary"
                 rows={3}
               />
@@ -356,7 +361,7 @@ export function AppointmentModal({ isOpen, onClose }: AppointmentModalProps) {
               disabled={isSubmitting}
               className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2 font-medium mt-6 transition-all duration-200"
             >
-              {isSubmitting ? "Booking..." : "Confirm Appointment"}
+              {isSubmitting ? "বুকিং হচ্ছে..." : "অ্যাপয়েন্টমেন্ট নিশ্চিত করুন"}
             </Button>
           </form>
         </div>

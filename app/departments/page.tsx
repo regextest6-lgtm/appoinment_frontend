@@ -1,24 +1,16 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { getDepartments } from "@/lib/api"
-
-interface Department {
-  id: number
-  name: string
-  description: string
-  image_url?: string
-}
+import { getDepartments, DepartmentResponse } from "@/lib/api"
+import { ChevronRight } from "lucide-react"
 
 export default function DepartmentsPage() {
-  const [departments, setDepartments] = useState<Department[]>([])
+  const [departments, setDepartments] = useState<DepartmentResponse[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -35,19 +27,6 @@ export default function DepartmentsPage() {
 
     fetchDepartments()
   }, [])
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -67,44 +46,64 @@ export default function DepartmentsPage() {
         </div>
       </section>
 
-      {/* Departments */}
+      {/* Departments Table */}
       <section className="w-full py-20 px-4 flex-1">
         <div className="container mx-auto">
           {loading ? (
-            <div className="text-center py-20">Loading...</div>
+            <div className="text-center py-20">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="mt-4 text-muted-foreground">Loading departments...</p>
+            </div>
+          ) : departments.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground">No departments found</p>
+            </div>
           ) : (
             <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="overflow-x-auto rounded-lg border border-border shadow-lg"
             >
-              {departments.map((dept) => (
-                <motion.div key={dept.id} variants={itemVariants} whileHover={{ y: -8 }} className="group">
-                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                    <div className="relative h-80 overflow-hidden bg-muted">
-                      <Image
-                        src={dept.image_url || "/placeholder.svg"}
-                        alt={dept.name}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors" />
-                      <div className="absolute inset-0 flex items-end p-6">
-                        <div>
-                          <h3 className="font-bold text-2xl text-white mb-2">{dept.name}</h3>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-6">
-                      <p className="text-muted-foreground mb-6">{dept.description}</p>
-                      <Button asChild className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                        <Link href={`/doctors?dept=${dept.id}`}>View Doctors</Link>
-                      </Button>
-                    </div>
-                  </Card>
-                </motion.div>
-              ))}
+              <table className="w-full">
+                <thead>
+                  <tr className="bg-primary/5 border-b border-border">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Department Name</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">Description</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-foreground">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {departments.map((dept, index) => (
+                    <motion.tr
+                      key={dept.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="border-b border-border hover:bg-primary/5 transition-colors duration-200"
+                    >
+                      <td className="px-6 py-4">
+                        <span className="font-semibold text-foreground">{dept.name}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-muted-foreground text-sm line-clamp-2">{dept.description}</span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="sm"
+                          className="text-primary hover:text-primary/80 hover:bg-primary/10"
+                        >
+                          <Link href={`/doctors?dept=${dept.id}`} className="flex items-center gap-1">
+                            View Doctors
+                            <ChevronRight size={16} />
+                          </Link>
+                        </Button>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
             </motion.div>
           )}
         </div>

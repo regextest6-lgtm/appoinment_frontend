@@ -47,35 +47,27 @@ export default function DoctorsPage() {
   const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>([])
   const [departments, setDepartments] = useState<{ id: number; name: string }[]>([])
 
+  // Fetch all doctors and departments on mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInitialData = async () => {
       try {
-        let doctorsData: Doctor[] = []
+        // Always fetch all doctors
+        const allDoctorsData = await getDoctors()
+        const validDoctors = Array.isArray(allDoctorsData) 
+          ? allDoctorsData.filter((d: Doctor) => d && d.name && d.id)
+          : []
         
-        // If dept parameter is provided, fetch doctors for that department
-        if (deptParam) {
-          console.log("Fetching doctors for department:", deptParam)
-          const deptDoctorsData = await getDoctorsByDepartment(parseInt(deptParam)) as Doctor[]
-          doctorsData = Array.isArray(deptDoctorsData) ? deptDoctorsData : []
-        } else {
-          // Otherwise fetch all doctors
-          const allDoctorsData = await getDoctors()
-          doctorsData = Array.isArray(allDoctorsData) ? allDoctorsData : []
-        }
-        
-        console.log("Doctors data:", doctorsData)
-        
-        // Filter out doctors with invalid data structure
-        const validDoctors = doctorsData.filter(
-          (d: Doctor) => d && d.name && d.id
-        ) as Doctor[]
-
         setDoctors(validDoctors)
-
+        
         // Fetch departments
         const departmentsData = await getDepartments()
         if (departmentsData && Array.isArray(departmentsData)) {
           setDepartments(departmentsData as { id: number; name: string }[])
+        }
+        
+        // If dept parameter is provided, set it as selected
+        if (deptParam) {
+          setSelectedDepartment(deptParam)
         }
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -86,7 +78,7 @@ export default function DoctorsPage() {
       }
     }
 
-    fetchData()
+    fetchInitialData()
   }, [deptParam])
 
   const handleSearch = () => {
@@ -113,21 +105,19 @@ export default function DoctorsPage() {
 
   // Update filtered doctors when doctors or selectedDepartment changes
   useEffect(() => {
-    if (doctors.length > 0) {
-      let results = doctors
+    let results = doctors
 
-      // Filter by department if selected
-      if (selectedDepartment) {
-        results = results.filter((d) => d.department_id === parseInt(selectedDepartment))
-      }
-
-      // Filter by doctor name if provided
-      if (doctorName.trim()) {
-        results = results.filter((d) => d.name.toLowerCase().includes(doctorName.toLowerCase()))
-      }
-
-      setFilteredDoctors(results)
+    // Filter by department if selected
+    if (selectedDepartment) {
+      results = results.filter((d) => d.department_id === parseInt(selectedDepartment))
     }
+
+    // Filter by doctor name if provided
+    if (doctorName.trim()) {
+      results = results.filter((d) => d.name.toLowerCase().includes(doctorName.toLowerCase()))
+    }
+
+    setFilteredDoctors(results)
   }, [doctors, selectedDepartment, doctorName])
 
   const containerVariants = {
