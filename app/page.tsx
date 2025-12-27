@@ -57,16 +57,18 @@ export default function HomePage() {
       try {
         const [deptData, doctorData] = await Promise.all([getDepartments(), getDoctors()]);
 
+        console.log("Doctor data:", doctorData);
         setDepartments(Array.isArray(deptData) ? deptData : []);
         // Filter out doctors with invalid data structure
         const validDoctors = (Array.isArray(doctorData) ? doctorData : []).filter(
           (doc: any) => doc && doc.user && doc.user.full_name
         );
         setTopDoctors(validDoctors.slice(0, 3));
+        console.log("Top doctors:", topDoctors);
       } catch (error) {
         console.error('Error fetching data:', error);
         setDepartments([]);
-        setTopDoctors([]);
+        setTopDoctors([]);      
       } finally {
         setLoading(false);
       }
@@ -134,7 +136,7 @@ export default function HomePage() {
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <div className="container lg:text-left text-center flex items-center min-h-[450px]">
+        <div className="container lg:text-left text-center flex items-center min-h-[450px] md:px-8 px-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -157,8 +159,57 @@ export default function HomePage() {
                 <Link href="/auth/login">Book an Appointment</Link>
               </Button>
             </motion.div>
+            <div>
+          {/* Doctors Images Slideshow */}
+          <div className='w-1/2 mx-auto'>
+          {topDoctors.map((doctor) => (
+              <motion.div
+                key={doctor.id}
+                variants={itemVariants}
+                whileHover={{ y: -8 }}
+                className="group cursor-pointer"
+              >
+                <Link href={`/doctors/${doctor.id}`}>
+                  <Card className="h-full overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+                    <div className="relative w-full aspect-square overflow-hidden bg-muted shrink-0">
+                      <Image
+                        src={doctor.profile_image_url || '/placeholder.svg'}
+                        alt={doctor.user.full_name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        priority={false}
+                        className="object-cover object-top group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-6 flex flex-col grow">
+                      <h3 className="font-bold text-lg text-foreground mb-2 line-clamp-2">
+                        {doctor.user.full_name}
+                      </h3>
+                      <p className="text-sm text-primary font-semibold mb-2">{doctor.specialty}</p>
+                      <p className="text-xs text-muted-foreground mb-4 grow">
+                        {doctor.years_of_experience || 0}+ years of experience
+                      </p>
+                      <Button
+                        size="sm"
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setShowAppointmentModal(true);
+                        }}
+                      >
+                        Book Appointment
+                      </Button>
+                    </div>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+          
+        </div>
           </motion.div>
         </div>
+        
       </section>
 
       {/* Stats Section */}
